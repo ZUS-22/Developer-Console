@@ -10,6 +10,7 @@ const UsageView           = () => import('../views/UsageView.vue')
 const AccountApiKeysView  = () => import('../views/AccountApiKeysView.vue')
 const AccountTeamView     = () => import('../views/AccountTeamView.vue')
 const AccountUsageView    = () => import('../views/AccountUsageView.vue')
+const DocsView            = () => import('../views/DocsView.vue')
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -25,6 +26,7 @@ const router = createRouter({
     { path: '/members',                  component: MembersView },
     { path: '/users',                    component: UsersView },
     { path: '/usage',                    component: UsageView },
+    { path: '/docs',                     component: DocsView },
   ],
 })
 
