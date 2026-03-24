@@ -8,10 +8,6 @@
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <button
-        class="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-rxs text-xs font-medium bg-transparent text-g2 border border-border2 hover:bg-card hover:text-white transition-all duration-[130ms] cursor-pointer"
-        @click="router.push('/members')"
-      >Members</button>
-      <button
         class="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-rxs text-xs font-medium bg-grn text-black hover:bg-grn2 transition-all duration-[130ms] cursor-pointer"
         @click="router.push('/accounts')"
       >
@@ -30,11 +26,9 @@ const route  = useRoute()
 const router = useRouter()
 
 const titleMap = {
-  '/accounts':  'Accounts',
-  '/api-keys':  'API Keys',
-  '/members':   'Sanas Members',
-  '/users':     'Console Users',
-  '/usage':     'Analytics',
+  '/accounts': 'Accounts',
+  '/members':  'Sanas Members',
+  '/usage':    'Analytics',
 }
 
 const accountSubTitles = {

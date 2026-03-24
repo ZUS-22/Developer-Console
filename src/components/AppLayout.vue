@@ -21,8 +21,6 @@ const router = useRouter()
 const routes = {
   accounts: '/accounts',
   usage:    '/usage',
-  'api-keys': '/api-keys',
-  users:    '/users',
   members:  '/members',
   settings: '/settings',
 }
