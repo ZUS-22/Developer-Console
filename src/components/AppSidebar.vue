@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-[220px] shrink-0 bg-[#000000] border-r border-border1 flex flex-col fixed top-0 left-0 bottom-0 z-[100] overflow-hidden">
+  <aside class="w-[220px] shrink-0 bg-sidebar border-r border-border1 flex flex-col fixed top-0 left-0 bottom-0 z-[100] overflow-hidden">
     <!-- Logo -->
     <div class="flex items-center gap-2.5 px-4 py-5">
       <img src="../assets/logo.png" alt="Sanas" class="h-8 w-auto" />
