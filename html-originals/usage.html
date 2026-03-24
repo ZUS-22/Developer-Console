@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usage - Sanas Developer Console</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0a0e17;
+            color: #e4e7f0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border: 1px solid #1e2847;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #6b7280;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #00d9ff;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        .logo::before {
+            content: '◆';
+            color: #00d9ff;
+            font-size: 12px;
+        }
+
+        .sidebar-content {
+            padding: 16px;
+        }
+
+        .search-groups {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f9fafb;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+        }
+
+        .account-icon {
+            font-size: 20px;
+        }
+
+        .account-info-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .account-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #13182b;
+            border: 3px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .account-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .account-id {
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .groups-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background 0.15s;
+        }
+
+        .groups-header:hover {
+            background: #e5e7eb;
+        }
+
+        .groups-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .groups-chevron {
+            color: #6b7280;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .groups-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .groups-container {
+            display: none;
+        }
+
+        .groups-container.expanded {
+            display: block;
+        }
+
+        .group-item-wrapper {
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .group-item-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .group-item-wrapper:last-child::before {
+            height: 24px;
+        }
+
+        .account-child {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            padding-left: 32px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+            position: relative;
+        }
+
+        .account-child::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 20px;
+            height: 2px;
+            background: #e5e7eb;
+        }
+
+        .account-child:hover {
+            background: #f3f4f6;
+        }
+
+        .account-child.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        .child-chevron {
+            color: #9ca3af;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .child-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .group-children {
+            margin-left: 20px;
+            padding-left: 12px;
+            border-left: 2px solid #e5e7eb;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .group-children.expanded {
+            display: block;
+        }
+
+        .subgroup-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+        }
+
+        .subgroup-item:hover {
+            background: #f3f4f6;
+        }
+
+        .subgroup-item.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: #e8e8ed;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-container {
+            background: #13182b;
+            border-radius: 50px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 15px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            color: #111827;
+        }
+
+        .nav-tab.active {
+            background: #111827;
+            color: white;
+        }
+
+        .user-header {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid #1e2847;
+            background: #13182b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-info {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .header {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            padding: 12px 32px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .breadcrumb-item {
+            color: #6b7280;
+            text-decoration: none;
+        }
+
+        .breadcrumb-separator {
+            color: #d1d5db;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 32px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .back-to-accounts {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            border-radius: 8px;
+            color: #00d9ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .back-to-accounts:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            transform: translateX(-2px);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .back-icon {
+            font-size: 16px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .export-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Feature Tabs */
+        .feature-tabs {
+            display: flex;
+            gap: 24px;
+            border: 1px solid #1e2847;
+            margin-bottom: 24px;
+        }
+
+        .feature-tab {
+            padding: 12px 4px;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+        }
+
+        .feature-tab:hover {
+            color: #111827;
+        }
+
+        .feature-tab.active {
+            color: #111827;
+            border-bottom-color: #111827;
+            font-weight: 500;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #00d9ff;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #0a0e17;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .filter-select:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #0a0e17;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        /* Charts */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .chart-card {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .chart-header {
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #e4e7f0;
+        }
+
+        .chart-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+            padding: 10px;
+        }
+
+        .chart-container canvas {
+            max-height: 100%;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: #13182b;
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e4e7f0;
+        }
+
+        .empty-message {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .empty-cta {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .empty-cta:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .multiselect {
+            position: relative;
+        }
+
+        .multiselect-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            margin-top: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .multiselect-dropdown.active {
+            display: block;
+        }
+
+        .multiselect-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .multiselect-option:hover {
+            background: #f9fafb;
+        }
+
+        .multiselect-option input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="logo" onclick="navigateToAccounts()">sanas</div>
+            </div>
+            <div class="sidebar-content">
+                <!-- Account Info Card -->
+                <div class="account-info-card">
+                    <div class="account-avatar" id="accountAvatar">UT</div>
+                    <div class="account-title" id="sidebarAccountName">R1RCM</div>
+                    <div class="account-id">Account ID: <span id="sidebarAccountId">R1RCM001</span></div>
+                </div>
+
+                <input type="text" class="search-groups" placeholder="Search Groups...">
+
+                <!-- Groups -->
+                <div class="account-section">
+                    <div id="accountChildren">
+                        <!-- Groups will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <div class="user-header">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">❓</button>
+                    <div class="user-info">Zupudi uday@sa...</div>
+                </div>
+
+                <div class="nav-container">
+                    <a href="#" class="nav-tab" onclick="navigateToHome(event)">
+                        <span>🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToAPIKeys(event)">
+                        <span>⬇️</span>
+                        <span>API Keys</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToUsers(event)">
+                        <span>👥</span>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="nav-tab active">
+                        <span>📊</span>
+                        <span>Usage</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Breadcrumb -->
+            <header class="header">
+                <nav class="breadcrumb">
+                    <a href="accounts.html" class="breadcrumb-item">Sanas</a>
+                    <span class="breadcrumb-separator">›</span>
+                    <a href="#" class="breadcrumb-item">Direct CX</a>
+                    <span class="breadcrumb-separator">›</span>
+                    <span class="breadcrumb-item" id="accountNameBreadcrumb">Carlos Usability ...</span>
+                </nav>
+            </header>
+
+            <div class="content">
+                <div class="page-header">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <a href="accounts.html" class="back-to-accounts">
+                            <span class="back-icon">←</span>
+                            <span>Back to Accounts</span>
+                        </a>
+                        <h1 class="page-title">Usage Dashboard</h1>
+                    </div>
+                    <button class="export-btn" onclick="exportCSV()">
+                        <span>📥</span>
+                        <span>Export CSV</span>
+                    </button>
+                </div>
+
+                <!-- Feature Tabs -->
+                <div class="feature-tabs">
+                    <div class="feature-tab active" onclick="switchFeatureTab('all')">All Products</div>
+                    <div class="feature-tab" onclick="switchFeatureTab('accent')">Accent Translation</div>
+                    <div class="feature-tab" onclick="switchFeatureTab('noise')">Noise Cancellation</div>
+                </div>
+
+                <!-- All Products Tab -->
+                <div class="tab-content active" id="all-tab">
+                    <div class="filters-section">
+                        <div class="filters-grid">
+                            <div class="filter-group">
+                                <label class="filter-label">API Key</label>
+                                <div class="multiselect">
+                                    <select class="filter-select" onclick="toggleMultiselect('apiKeys')">
+                                        <option>All Keys</option>
+                                    </select>
+                                    <div class="multiselect-dropdown" id="apiKeys-dropdown">
+                                        <div class="multiselect-option">
+                                            <input type="checkbox" checked> All Keys
+                                        </div>
+                                        <div class="multiselect-option">
+                                            <input type="checkbox"> Production Key (••••p7dc)
+                                        </div>
+                                        <div class="multiselect-option">
+                                            <input type="checkbox"> Development Key (••••a3f9)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="filter-group">
+                                <label class="filter-label">Features</label>
+                                <div class="multiselect">
+                                    <select class="filter-select" onclick="toggleMultiselect('features')">
+                                        <option>All Features</option>
+                                    </select>
+                                    <div class="multiselect-dropdown" id="features-dropdown">
+                                        <div class="multiselect-option">
+                                            <input type="checkbox" checked> All Features
+                                        </div>
+                                        <div class="multiselect-option">
+                                            <input type="checkbox"> Accent Translation
+                                        </div>
+                                        <div class="multiselect-option">
+                                            <input type="checkbox"> Noise Cancellation
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="filter-group">
+                                <label class="filter-label">Date Range</label>
+                                <select class="filter-select" id="dateRange" onchange="toggleCustomDates()">
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30" selected>Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group" id="customDatesGroup" style="display: none;">
+                                <label class="filter-label">Start Date</label>
+                                <input type="date" class="filter-input" id="startDate">
+                            </div>
+
+                            <div class="filter-group" id="customDatesGroup2" style="display: none;">
+                                <label class="filter-label">End Date</label>
+                                <input type="date" class="filter-input" id="endDate">
+                            </div>
+
+                            <div class="filter-group" id="deploymentFilter">
+                                <label class="filter-label">Deployment</label>
+                                <select class="filter-select">
+                                    <option>Self Hosted</option>
+                                    <option>Cloud Hosted</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label class="filter-label">Time Bucketing</label>
+                                <select class="filter-select">
+                                    <option>Day</option>
+                                    <option>Week</option>
+                                    <option>Month</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="charts-section">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">API Requests Processed</div>
+                                <div class="chart-subtitle">Number of API requests over time</div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="apiRequestsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">Minutes of Audio Processed</div>
+                                <div class="chart-subtitle">Total audio processing time</div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="audioMinutesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accent Translation Tab -->
+                <div class="tab-content" id="accent-tab">
+                    <!-- Same filters and charts structure -->
+                    <div class="filters-section">
+                        <div class="filters-grid">
+                            <!-- Same filters as All Products -->
+                            <div class="filter-group">
+                                <label class="filter-label">API Key</label>
+                                <select class="filter-select">
+                                    <option>All Keys</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Date Range</label>
+                                <select class="filter-select">
+                                    <option value="30" selected>Last 30 days</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Deployment</label>
+                                <select class="filter-select">
+                                    <option>Self Hosted</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Time Bucketing</label>
+                                <select class="filter-select">
+                                    <option>Day</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-section">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">Accent Translation - API Requests</div>
+                                <div class="chart-subtitle">Number of accent translation requests over time</div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="accentRequestsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">Accent Translation - Minutes Processed</div>
+                                <div class="chart-subtitle">Total audio processing time for accent translation</div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="accentMinutesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Noise Cancellation Tab -->
+                <div class="tab-content" id="noise-tab">
+                    <!-- Same structure as Accent Translation -->
+                    <div class="filters-section">
+                        <div class="filters-grid">
+                            <div class="filter-group">
+                                <label class="filter-label">API Key</label>
+                                <select class="filter-select">
+                                    <option>All Keys</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Date Range</label>
+                                <select class="filter-select">
+                                    <option value="30" selected>Last 30 days</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Deployment</label>
+                                <select class="filter-select">
+                                    <option>Self Hosted</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Time Bucketing</label>
+                                <select class="filter-select">
+                                    <option>Day</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-section">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">Noise Cancellation - API Requests</div>
+                                <div class="chart-subtitle">Number of noise cancellation requests over time</div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="noiseRequestsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">Noise Cancellation - Minutes Processed</div>
+                                <div class="chart-subtitle">Total audio processing time for noise cancellation</div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="noiseMinutesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const accountName = urlParams.get('name') || 'R1RCM';
+        const accountId = urlParams.get('id') || 'R1RCM001';
+        const billingPlansParam = urlParams.get('plans');
+        const billingPlans = billingPlansParam ? JSON.parse(decodeURIComponent(billingPlansParam)) : ['Self Hosted SDK'];
+        const selectedGroupId = urlParams.get('group') || null;
+
+        // Generate initials from account name
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+
+        document.getElementById('accountNameBreadcrumb').textContent = accountName;
+        document.getElementById('sidebarAccountName').textContent = accountName;
+        document.getElementById('sidebarAccountId').textContent = accountId;
+        document.getElementById('accountAvatar').textContent = getInitials(accountName);
+
+        // Group hierarchy data (max 3 levels: Account > Group > Subgroup)
+        const groupHierarchy = [
+            {
+                id: 'production',
+                name: 'Production',
+                children: [
+                    { id: 'oneplus', name: 'OnePlus' },
+                    { id: 'realme', name: 'Real Me' },
+                    { id: 'onepay', name: 'OnePay' }
+                ]
+            },
+            {
+                id: 'staging',
+                name: 'Staging',
+                children: []
+            },
+            {
+                id: 'uat',
+                name: 'UAT',
+                children: []
+            }
+        ];
+
+
+        // Render group hierarchy in sidebar
+        function renderGroupHierarchy() {
+            const container = document.getElementById('accountChildren');
+            container.innerHTML = '';
+
+            groupHierarchy.forEach((group, index) => {
+                const groupWrapper = document.createElement('div');
+                groupWrapper.className = 'group-item-wrapper';
+
+                // Main group element
+                const groupItem = document.createElement('div');
+                groupItem.className = 'account-child' + (selectedGroupId === group.id ? ' selected' : '');
+                groupItem.innerHTML = `
+                    <span>${group.name}</span>
+                    ${group.children.length > 0 ? `<span class="child-chevron">›</span>` : ''}
+                `;
+
+                groupItem.onclick = (e) => {
+                    e.stopPropagation();
+                    if (group.children.length > 0) {
+                        toggleGroupChildren(group.id);
+                    } else {
+                        selectGroup(group.id, group.name);
+                    }
+                };
+
+                groupWrapper.appendChild(groupItem);
+
+                // Subgroups (if any)
+                if (group.children.length > 0) {
+                    const childrenContainer = document.createElement('div');
+                    childrenContainer.className = 'group-children';
+                    childrenContainer.id = `children-${group.id}`;
+
+                    group.children.forEach(subgroup => {
+                        const subgroupItem = document.createElement('div');
+                        subgroupItem.className = 'subgroup-item' + (selectedGroupId === subgroup.id ? ' selected' : '');
+                        subgroupItem.innerHTML = `<span>${subgroup.name}</span>`;
+                        subgroupItem.onclick = (e) => {
+                            e.stopPropagation();
+                            selectGroup(subgroup.id, subgroup.name);
+                        };
+                        childrenContainer.appendChild(subgroupItem);
+                    });
+
+                    groupWrapper.appendChild(childrenContainer);
+                }
+
+                container.appendChild(groupWrapper);
+            });
+        }
+
+        // Toggle expand/collapse of group children
+        function toggleGroupChildren(groupId) {
+            const childrenContainer = document.getElementById(`children-${groupId}`);
+            // Find the parent group item and get its chevron
+            const groupItem = childrenContainer.previousElementSibling;
+            const chevron = groupItem ? groupItem.querySelector('.child-chevron') : null;
+
+            if (childrenContainer.classList.contains('expanded')) {
+                childrenContainer.classList.remove('expanded');
+                if (chevron) chevron.classList.remove('expanded');
+            } else {
+                childrenContainer.classList.add('expanded');
+                if (chevron) chevron.classList.add('expanded');
+            }
+        }
+
+        // Select a group and update the context
+        function selectGroup(groupId, groupName) {
+            const currentPage = window.location.pathname.split('/').pop();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = groupId ? `&group=${encodeURIComponent(groupId)}` : '';
+
+            // Update URL with selected group
+            const newUrl = `${currentPage}?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+            window.location.href = newUrl;
+        }
+
+        // Initialize hierarchy on page load
+        renderGroupHierarchy();
+
+
+        function switchFeatureTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleCustomDates() {
+            const dateRange = document.getElementById('dateRange').value;
+            const customGroups = [document.getElementById('customDatesGroup'), document.getElementById('customDatesGroup2')];
+
+            if (dateRange === 'custom') {
+                customGroups.forEach(g => g.style.display = 'flex');
+            } else {
+                customGroups.forEach(g => g.style.display = 'none');
+            }
+        }
+
+        function toggleMultiselect(id) {
+            const dropdown = document.getElementById(id + '-dropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function exportCSV() {
+            const today = new Date().toISOString().split('T')[0];
+            const filename = `usage_report_${today}.csv`;
+
+            // Sample CSV data
+            const csvData = `Day,Group,Group ID,API Request,Endpoint,API Name,API Alias,API Requests,Total Aggregated Minutes,Successful API Requests
+2026-03-15,French-Danish,MLS4RHRC,/translate,accent_translation,Accent Translation API,AT_v1,150,45.5,148
+2026-03-14,French-Spanish,MLS7572H,/translate,accent_translation,Accent Translation API,AT_v1,120,38.2,118
+2026-03-13,Default Group,MLS6YY7Q,/denoise,noise_cancellation,Noise Cancellation API,NC_v1,200,62.8,195`;
+
+            const blob = new Blob([csvData], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Navigation
+        function navigateToAccounts() {
+            window.location.href = 'accounts.html';
+        }
+
+        function navigateToHome(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `account-detail.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToUsers(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `users.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToAPIKeys(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `api-keys.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        // Close multiselect dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.multiselect')) {
+                document.querySelectorAll('.multiselect-dropdown').forEach(d => {
+                    d.classList.remove('active');
+                });
+            }
+        });
+
+        // Generate dummy data for last 30 days
+        function generateDates(days) {
+            const dates = [];
+            const today = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            }
+            return dates;
+        }
+
+        function generateRandomData(days, min, max) {
+            return Array.from({ length: days }, () =>
+                Math.floor(Math.random() * (max - min + 1)) + min
+            );
+        }
+
+        const dates = generateDates(30);
+
+        // Chart configuration
+        const chartConfig = {
+            type: 'line',
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#111827',
+                        padding: 12,
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#374151',
+                        borderWidth: 1,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(30, 40, 71, 0.5)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: 11
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: 11
+                            },
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 10
+                        }
+                    }
+                }
+            }
+        };
+
+        // Initialize charts after page load
+        window.addEventListener('load', function() {
+            // All Products - API Requests Chart
+            new Chart(document.getElementById('apiRequestsChart'), {
+                ...chartConfig,
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'API Requests',
+                        data: generateRandomData(30, 800, 1500),
+                        borderColor: '#00d9ff',
+                        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00d9ff',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                }
+            });
+
+            // All Products - Audio Minutes Chart
+            new Chart(document.getElementById('audioMinutesChart'), {
+                ...chartConfig,
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Minutes',
+                        data: generateRandomData(30, 250, 500),
+                        borderColor: '#a78bfa',
+                        backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#a78bfa',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                }
+            });
+
+            // Accent Translation - API Requests Chart
+            new Chart(document.getElementById('accentRequestsChart'), {
+                ...chartConfig,
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'API Requests',
+                        data: generateRandomData(30, 400, 800),
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00ff88',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                }
+            });
+
+            // Accent Translation - Audio Minutes Chart
+            new Chart(document.getElementById('accentMinutesChart'), {
+                ...chartConfig,
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Minutes',
+                        data: generateRandomData(30, 150, 350),
+                        borderColor: '#00d9ff',
+                        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00d9ff',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                }
+            });
+
+            // Noise Cancellation - API Requests Chart
+            new Chart(document.getElementById('noiseRequestsChart'), {
+                ...chartConfig,
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'API Requests',
+                        data: generateRandomData(30, 300, 700),
+                        borderColor: '#a78bfa',
+                        backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#a78bfa',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                }
+            });
+
+            // Noise Cancellation - Audio Minutes Chart
+            new Chart(document.getElementById('noiseMinutesChart'), {
+                ...chartConfig,
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Minutes',
+                        data: generateRandomData(30, 100, 250),
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00ff88',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>

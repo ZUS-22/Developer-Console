@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - Sanas Developer Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0a0e17;
+            color: #e4e7f0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border: 1px solid #1e2847;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #6b7280;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #00d9ff;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        .logo::before {
+            content: '◆';
+            color: #00d9ff;
+            font-size: 12px;
+        }
+
+        .sidebar-content {
+            padding: 16px;
+        }
+
+        .search-groups {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f9fafb;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+        }
+
+        .account-icon {
+            font-size: 20px;
+        }
+
+        .account-info-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .account-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #13182b;
+            border: 3px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .account-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .account-id {
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .groups-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background 0.15s;
+        }
+
+        .groups-header:hover {
+            background: #e5e7eb;
+        }
+
+        .groups-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .groups-chevron {
+            color: #6b7280;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .groups-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .groups-container {
+            display: none;
+        }
+
+        .groups-container.expanded {
+            display: block;
+        }
+
+        .group-item-wrapper {
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .group-item-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .group-item-wrapper:last-child::before {
+            height: 24px;
+        }
+
+        .account-child {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            padding-left: 32px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+            position: relative;
+        }
+
+        .account-child::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 20px;
+            height: 2px;
+            background: #e5e7eb;
+        }
+
+        .account-child:hover {
+            background: #f3f4f6;
+        }
+
+        .account-child.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        .child-chevron {
+            color: #9ca3af;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .child-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .group-children {
+            margin-left: 20px;
+            padding-left: 12px;
+            border-left: 2px solid #e5e7eb;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .group-children.expanded {
+            display: block;
+        }
+
+        .subgroup-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+        }
+
+        .subgroup-item:hover {
+            background: #f3f4f6;
+        }
+
+        .subgroup-item.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: #e8e8ed;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-container {
+            background: #13182b;
+            border-radius: 50px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 15px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            color: #111827;
+        }
+
+        .nav-tab.active {
+            background: #111827;
+            color: white;
+        }
+
+        .user-header {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid #1e2847;
+            background: #13182b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-info {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .header {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            padding: 12px 32px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .breadcrumb-item {
+            color: #6b7280;
+            text-decoration: none;
+        }
+
+        .breadcrumb-separator {
+            color: #d1d5db;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 32px;
+        }
+
+        .page-header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .back-to-accounts {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            border-radius: 8px;
+            color: #00d9ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .back-to-accounts:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            transform: translateX(-2px);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .back-icon {
+            font-size: 16px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 280px;
+            background: #13182b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .filter-btn {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #13182b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
+            color: #e4e7f0;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .filter-btn:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .invite-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .invite-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Table */
+        .table-wrapper {
+            background: #13182b;
+            border-radius: 8px;
+            border: 1px solid #1e2847;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 217, 255, 0.05);
+            border-bottom: 1px solid #00d9ff;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #00d9ff;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        tbody tr {
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 217, 255, 0.08);
+            border-left-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #e4e7f0;
+        }
+
+        .user-email {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-badge.account-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .role-badge.group-admin {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .role-badge.member {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .scope-text {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .role-scope-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .role-scope-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .role-scope-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-scope-badge.account-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .role-scope-badge.group-admin {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .role-scope-badge.member {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .show-more-btn {
+            color: #6366f1;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 4px;
+        }
+
+        .show-more-btn:hover {
+            color: #4f46e5;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.activated {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.invitation-sent {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.invitation-expired {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.deactivated {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .date-text {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #00d9ff;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border-color: transparent;
+            font-weight: 600;
+        }
+
+        .action-btn.primary:hover {
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .action-btn.danger {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .action-btn.danger:hover {
+            background: rgba(220, 38, 38, 0.2);
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #13182b;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border: 1px solid #1e2847;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d9ff;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #0a0e17;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #0a0e17;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .role-scope-editor {
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .role-scope-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .role-scope-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .add-scope-btn {
+            padding: 8px 16px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .remove-scope-btn {
+            padding: 6px 10px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border: 1px solid #1e2847;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .cancel-btn {
+            padding: 10px 20px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-btn:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .save-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="logo" onclick="navigateToAccounts()">sanas</div>
+            </div>
+            <div class="sidebar-content">
+                <!-- Account Info Card -->
+                <div class="account-info-card">
+                    <div class="account-avatar" id="accountAvatar">UT</div>
+                    <div class="account-title" id="sidebarAccountName">R1RCM</div>
+                    <div class="account-id">Account ID: <span id="sidebarAccountId">R1RCM001</span></div>
+                </div>
+
+                <input type="text" class="search-groups" placeholder="Search Groups...">
+
+                <!-- Groups -->
+                <div class="account-section">
+                    <div id="accountChildren">
+                        <!-- Groups will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <div class="user-header">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">❓</button>
+                    <div class="user-info">Zupudi uday@sa...</div>
+                </div>
+
+                <div class="nav-container">
+                    <a href="#" class="nav-tab" onclick="navigateToHome(event)">
+                        <span>🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToAPIKeys(event)">
+                        <span>⬇️</span>
+                        <span>API Keys</span>
+                    </a>
+                    <a href="#" class="nav-tab active">
+                        <span>👥</span>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToUsage(event)">
+                        <span>📊</span>
+                        <span>Usage</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Breadcrumb -->
+            <header class="header">
+                <nav class="breadcrumb">
+                    <a href="accounts.html" class="breadcrumb-item">Sanas</a>
+                    <span class="breadcrumb-separator">›</span>
+                    <a href="#" class="breadcrumb-item">Direct CX</a>
+                    <span class="breadcrumb-separator">›</span>
+                    <span class="breadcrumb-item" id="accountNameBreadcrumb">Carlos Usability ...</span>
+                </nav>
+            </header>
+
+            <div class="content">
+                <div class="page-header-section">
+                    <a href="accounts.html" class="back-to-accounts">
+                        <span class="back-icon">←</span>
+                        <span>Back to Accounts</span>
+                    </a>
+                    <h1 class="page-title">Console Users</h1>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <input type="text" class="search-input" placeholder="Search by name or email" id="searchInput">
+                        <select class="filter-btn" id="roleFilter">
+                            <option value="">All Roles</option>
+                            <option value="account-admin">Account Admin</option>
+                            <option value="group-admin">Group Admin</option>
+                            <option value="member">Member</option>
+                        </select>
+                        <select class="filter-btn" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="activated">Activated</option>
+                            <option value="invitation-sent">Invitation Sent</option>
+                            <option value="invitation-expired">Invitation Expired</option>
+                            <option value="deactivated">Deactivated</option>
+                        </select>
+                    </div>
+                    <button class="invite-btn" onclick="openInviteModal()">Invite Users</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role & Access Scope</th>
+                                <th>Status</th>
+                                <th>Created On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Invite User Modal -->
+    <div class="modal-overlay" id="inviteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Invite User</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" id="inviteEmail" placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="inviteRole">
+                        <option value="account-admin">Account Admin</option>
+                        <option value="group-admin">Group Admin</option>
+                        <option value="member">Member</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeInviteModal()">Cancel</button>
+                <button class="save-btn" onclick="sendInvitation()">Send Invitation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Access Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit User Access</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">User</label>
+                    <input type="text" class="form-input" id="editUserName" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role & Scope Assignments</label>
+                    <div id="roleScopeEditor"></div>
+                    <button class="add-scope-btn" onclick="addRoleScopeRow()">+ Add Role-Scope</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+                <button class="save-btn" onclick="saveAccessChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const accountName = urlParams.get('name') || 'R1RCM';
+        const accountId = urlParams.get('id') || 'R1RCM001';
+        const billingPlansParam = urlParams.get('plans');
+        const billingPlans = billingPlansParam ? JSON.parse(decodeURIComponent(billingPlansParam)) : ['Self Hosted SDK'];
+        const selectedGroupId = urlParams.get('group') || null;
+
+        // Generate initials from account name
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+
+        document.getElementById('accountNameBreadcrumb').textContent = accountName;
+        document.getElementById('sidebarAccountName').textContent = accountName;
+        document.getElementById('sidebarAccountId').textContent = accountId;
+        document.getElementById('accountAvatar').textContent = getInitials(accountName);
+
+        // Group hierarchy data (max 3 levels: Account > Group > Subgroup)
+        const groupHierarchy = [
+            {
+                id: 'production',
+                name: 'Production',
+                children: [
+                    { id: 'oneplus', name: 'OnePlus' },
+                    { id: 'realme', name: 'Real Me' },
+                    { id: 'onepay', name: 'OnePay' }
+                ]
+            },
+            {
+                id: 'staging',
+                name: 'Staging',
+                children: []
+            },
+            {
+                id: 'uat',
+                name: 'UAT',
+                children: []
+            }
+        ];
+
+
+        // Render group hierarchy in sidebar
+        function renderGroupHierarchy() {
+            const container = document.getElementById('accountChildren');
+            container.innerHTML = '';
+
+            groupHierarchy.forEach((group, index) => {
+                const groupWrapper = document.createElement('div');
+                groupWrapper.className = 'group-item-wrapper';
+
+                // Main group element
+                const groupItem = document.createElement('div');
+                groupItem.className = 'account-child' + (selectedGroupId === group.id ? ' selected' : '');
+                groupItem.innerHTML = `
+                    <span>${group.name}</span>
+                    ${group.children.length > 0 ? `<span class="child-chevron">›</span>` : ''}
+                `;
+
+                groupItem.onclick = (e) => {
+                    e.stopPropagation();
+                    if (group.children.length > 0) {
+                        toggleGroupChildren(group.id);
+                    } else {
+                        selectGroup(group.id, group.name);
+                    }
+                };
+
+                groupWrapper.appendChild(groupItem);
+
+                // Subgroups (if any)
+                if (group.children.length > 0) {
+                    const childrenContainer = document.createElement('div');
+                    childrenContainer.className = 'group-children';
+                    childrenContainer.id = `children-${group.id}`;
+
+                    group.children.forEach(subgroup => {
+                        const subgroupItem = document.createElement('div');
+                        subgroupItem.className = 'subgroup-item' + (selectedGroupId === subgroup.id ? ' selected' : '');
+                        subgroupItem.innerHTML = `<span>${subgroup.name}</span>`;
+                        subgroupItem.onclick = (e) => {
+                            e.stopPropagation();
+                            selectGroup(subgroup.id, subgroup.name);
+                        };
+                        childrenContainer.appendChild(subgroupItem);
+                    });
+
+                    groupWrapper.appendChild(childrenContainer);
+                }
+
+                container.appendChild(groupWrapper);
+            });
+        }
+
+        // Toggle expand/collapse of group children
+        function toggleGroupChildren(groupId) {
+            const childrenContainer = document.getElementById(`children-${groupId}`);
+            // Find the parent group item and get its chevron
+            const groupItem = childrenContainer.previousElementSibling;
+            const chevron = groupItem ? groupItem.querySelector('.child-chevron') : null;
+
+            if (childrenContainer.classList.contains('expanded')) {
+                childrenContainer.classList.remove('expanded');
+                if (chevron) chevron.classList.remove('expanded');
+            } else {
+                childrenContainer.classList.add('expanded');
+                if (chevron) chevron.classList.add('expanded');
+            }
+        }
+
+        // Select a group and update the context
+        function selectGroup(groupId, groupName) {
+            const currentPage = window.location.pathname.split('/').pop();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = groupId ? `&group=${encodeURIComponent(groupId)}` : '';
+
+            // Update URL with selected group
+            const newUrl = `${currentPage}?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+            window.location.href = newUrl;
+        }
+
+        // Initialize hierarchy on page load
+        renderGroupHierarchy();
+
+        // Sample users data - now with role-scope combinations
+        const users = [
+            {
+                id: 1,
+                name: "Zupudi Uday",
+                email: "zupudi.uday@sanas.ai",
+                roleScopes: [{ role: "account-admin", scope: "Account Level" }],
+                status: "activated",
+                createdOn: "2026-03-15"
+            },
+            {
+                id: 2,
+                name: "Carlos Mejia",
+                email: "carlos.mejia@sanas.ai",
+                roleScopes: [
+                    { role: "group-admin", scope: "French-Danish" },
+                    { role: "group-admin", scope: "French-Spanish" },
+                    { role: "member", scope: "French-Italian" }
+                ],
+                status: "activated",
+                createdOn: "2026-03-14"
+            },
+            {
+                id: 3,
+                name: "Kushant Gang",
+                email: "kushant.gang@sanas.ai",
+                roleScopes: [{ role: "member", scope: "French-Italian" }],
+                status: "invitation-sent",
+                createdOn: "2026-03-13"
+            },
+            {
+                id: 4,
+                name: "Harshith Gowda",
+                email: "harshith.gowda@sanas.ai",
+                roleScopes: [
+                    { role: "group-admin", scope: "French-Danish" },
+                    { role: "member", scope: "French-Spanish" },
+                    { role: "member", scope: "French-Italian" },
+                    { role: "member", scope: "Default Group" },
+                    { role: "group-admin", scope: "Spanish-English" },
+                    { role: "member", scope: "German-French" }
+                ],
+                status: "activated",
+                createdOn: "2026-03-12"
+            },
+            {
+                id: 5,
+                name: "John Smith",
+                email: "john.smith@sanas.ai",
+                roleScopes: [{ role: "group-admin", scope: "French-Danish" }],
+                status: "invitation-expired",
+                createdOn: "2026-03-10"
+            },
+            {
+                id: 6,
+                name: "Jane Doe",
+                email: "jane.doe@sanas.ai",
+                roleScopes: [{ role: "member", scope: "French-Spanish" }],
+                status: "deactivated",
+                createdOn: "2026-03-08"
+            }
+        ];
+
+        const availableGroups = ["French-Danish", "French-Spanish", "French-Italian", "Default Group", "Spanish-English", "German-French"];
+
+        let currentEditUserId = null;
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTable');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            let filteredUsers = users.filter(user => {
+                const matchesSearch = user.name.toLowerCase().includes(searchTerm) || user.email.toLowerCase().includes(searchTerm);
+                const matchesRole = !roleFilter || user.roleScopes.some(rs => rs.role === roleFilter);
+                const matchesStatus = !statusFilter || user.status === statusFilter;
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+
+            // Sort by createdOn (newest first)
+            filteredUsers.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+
+            tbody.innerHTML = filteredUsers.map(user => {
+                const statusLabel = user.status === 'activated' ? 'Activated' :
+                                   user.status === 'invitation-sent' ? 'Invitation Sent' :
+                                   user.status === 'invitation-expired' ? 'Invitation Expired' : 'Deactivated';
+                const formattedDate = new Date(user.createdOn).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                // Render role-scope combinations
+                const roleScopeHTML = renderRoleScopeCombinations(user);
+
+                let actions = `<button class="action-btn" onclick="openEditModal(${user.id})">Edit</button>`;
+                if (user.status === 'invitation-sent' || user.status === 'invitation-expired') {
+                    actions += `<button class="action-btn primary" onclick="resendInvitation(${user.id})">Resend Invitation</button>`;
+                } else if (user.status === 'activated') {
+                    actions += `<button class="action-btn danger" onclick="deactivateUser(${user.id})">Deactivate</button>`;
+                }
+
+                return `
+                    <tr>
+                        <td><div class="user-name">${user.name}</div></td>
+                        <td><div class="user-email">${user.email}</div></td>
+                        <td>${roleScopeHTML}</td>
+                        <td><span class="status-badge ${user.status}">${statusLabel}</span></td>
+                        <td><div class="date-text">${formattedDate}</div></td>
+                        <td><div class="actions">${actions}</div></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderRoleScopeCombinations(user) {
+            const roleScopes = user.roleScopes;
+
+            // Account Admin gets special treatment
+            if (roleScopes.length === 1 && roleScopes[0].role === 'account-admin') {
+                return `
+                    <div class="role-scope-list">
+                        <div class="role-scope-item">
+                            <span class="role-scope-badge account-admin">Account Admin - All Access</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Show first 2 combinations
+            const showLimit = 2;
+            const visible = roleScopes.slice(0, showLimit);
+            const hidden = roleScopes.slice(showLimit);
+
+            let html = '<div class="role-scope-list">';
+
+            visible.forEach(rs => {
+                const roleLabel = rs.role === 'group-admin' ? 'Group Admin' : 'Member';
+                html += `
+                    <div class="role-scope-item">
+                        <span class="role-scope-badge ${rs.role}">${roleLabel} - ${rs.scope}</span>
+                    </div>
+                `;
+            });
+
+            if (hidden.length > 0) {
+                html += `
+                    <div class="show-more-btn" onclick="toggleRoleScopes(${user.id})">
+                        +${hidden.length} more
+                    </div>
+                    <div id="hidden-scopes-${user.id}" class="hidden">
+                `;
+                hidden.forEach(rs => {
+                    const roleLabel = rs.role === 'group-admin' ? 'Group Admin' : 'Member';
+                    html += `
+                        <div class="role-scope-item">
+                            <span class="role-scope-badge ${rs.role}">${roleLabel} - ${rs.scope}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function toggleRoleScopes(userId) {
+            const hiddenElement = document.getElementById(`hidden-scopes-${userId}`);
+            const btn = event.target;
+
+            if (hiddenElement.classList.contains('hidden')) {
+                hiddenElement.classList.remove('hidden');
+                btn.textContent = 'Show less';
+            } else {
+                hiddenElement.classList.add('hidden');
+                const user = users.find(u => u.id === userId);
+                const hiddenCount = user.roleScopes.length - 2;
+                btn.textContent = `+${hiddenCount} more`;
+            }
+        }
+
+        // Invite Modal
+        function openInviteModal() {
+            document.getElementById('inviteModal').classList.add('active');
+            document.getElementById('inviteEmail').value = '';
+            document.getElementById('inviteRole').value = 'member';
+        }
+
+        function closeInviteModal() {
+            document.getElementById('inviteModal').classList.remove('active');
+        }
+
+        function sendInvitation() {
+            const email = document.getElementById('inviteEmail').value;
+            const role = document.getElementById('inviteRole').value;
+
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+
+            const newUser = {
+                id: users.length + 1,
+                name: email.split('@')[0],
+                email: email,
+                roleScopes: role === 'account-admin'
+                    ? [{ role: 'account-admin', scope: 'Account Level' }]
+                    : [{ role: role, scope: 'Default Group' }],
+                status: 'invitation-sent',
+                createdOn: new Date().toISOString().split('T')[0]
+            };
+
+            users.push(newUser);
+            renderUsersTable();
+            closeInviteModal();
+            alert(`Invitation sent to ${email}`);
+        }
+
+        // Edit Modal
+        function openEditModal(userId) {
+            currentEditUserId = userId;
+            const user = users.find(u => u.id === userId);
+
+            document.getElementById('editUserName').value = `${user.name} (${user.email})`;
+            renderRoleScopeEditor(user.roleScopes);
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function renderRoleScopeEditor(roleScopes) {
+            const container = document.getElementById('roleScopeEditor');
+            container.innerHTML = roleScopes.map((rs, index) => `
+                <div class="role-scope-editor" id="rs-row-${index}">
+                    <div class="role-scope-row">
+                        <select class="form-select" id="role-${index}">
+                            <option value="account-admin" ${rs.role === 'account-admin' ? 'selected' : ''}>Account Admin</option>
+                            <option value="group-admin" ${rs.role === 'group-admin' ? 'selected' : ''}>Group Admin</option>
+                            <option value="member" ${rs.role === 'member' ? 'selected' : ''}>Member</option>
+                        </select>
+                        <select class="form-select" id="scope-${index}">
+                            <option value="Account Level" ${rs.scope === 'Account Level' ? 'selected' : ''}>Account Level</option>
+                            ${availableGroups.map(group =>
+                                `<option value="${group}" ${rs.scope === group ? 'selected' : ''}>${group}</option>`
+                            ).join('')}
+                        </select>
+                        ${roleScopes.length > 1 ? `<button class="remove-scope-btn" onclick="removeRoleScopeRow(${index})">Remove</button>` : '<div></div>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addRoleScopeRow() {
+            const container = document.getElementById('roleScopeEditor');
+            const currentRows = container.querySelectorAll('.role-scope-editor').length;
+
+            const newRow = document.createElement('div');
+            newRow.className = 'role-scope-editor';
+            newRow.id = `rs-row-${currentRows}`;
+            newRow.innerHTML = `
+                <div class="role-scope-row">
+                    <select class="form-select" id="role-${currentRows}">
+                        <option value="account-admin">Account Admin</option>
+                        <option value="group-admin">Group Admin</option>
+                        <option value="member" selected>Member</option>
+                    </select>
+                    <select class="form-select" id="scope-${currentRows}">
+                        <option value="Account Level">Account Level</option>
+                        ${availableGroups.map(group => `<option value="${group}">${group}</option>`).join('')}
+                    </select>
+                    <button class="remove-scope-btn" onclick="removeRoleScopeRow(${currentRows})">Remove</button>
+                </div>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeRoleScopeRow(index) {
+            document.getElementById(`rs-row-${index}`).remove();
+        }
+
+        function saveAccessChanges() {
+            const user = users.find(u => u.id === currentEditUserId);
+            const container = document.getElementById('roleScopeEditor');
+            const rows = container.querySelectorAll('.role-scope-editor');
+
+            const newRoleScopes = [];
+            rows.forEach((row, index) => {
+                const roleSelect = document.getElementById(`role-${index}`);
+                const scopeSelect = document.getElementById(`scope-${index}`);
+
+                if (roleSelect && scopeSelect) {
+                    newRoleScopes.push({
+                        role: roleSelect.value,
+                        scope: scopeSelect.value
+                    });
+                }
+            });
+
+            user.roleScopes = newRoleScopes.length > 0 ? newRoleScopes : [{ role: 'member', scope: 'Default Group' }];
+
+            renderUsersTable();
+            closeEditModal();
+            alert('User access updated successfully');
+        }
+
+        // Actions
+        function resendInvitation(userId) {
+            const user = users.find(u => u.id === userId);
+            alert(`Invitation resent to ${user.email}`);
+        }
+
+        function deactivateUser(userId) {
+            if (confirm('Are you sure you want to deactivate this user?')) {
+                const user = users.find(u => u.id === userId);
+                user.status = 'deactivated';
+                renderUsersTable();
+                alert('User deactivated successfully');
+            }
+        }
+
+        // Navigation
+        function navigateToAccounts() {
+            window.location.href = 'accounts.html';
+        }
+
+        function navigateToHome(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `account-detail.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToUsage(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `usage.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToAPIKeys(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `api-keys.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', renderUsersTable);
+        document.getElementById('roleFilter').addEventListener('change', renderUsersTable);
+        document.getElementById('statusFilter').addEventListener('change', renderUsersTable);
+
+        // Close modals when clicking outside
+        document.getElementById('inviteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeInviteModal();
+        });
+
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditModal();
+        });
+
+        // Initialize
+        renderUsersTable();
+    </script>
+</body>
+</html>

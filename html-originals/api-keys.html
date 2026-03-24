@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys - Sanas Developer Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0a0e17;
+            color: #e4e7f0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border: 1px solid #1e2847;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #6b7280;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #00d9ff;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        .logo::before {
+            content: '◆';
+            color: #00d9ff;
+            font-size: 12px;
+        }
+
+        .sidebar-content {
+            padding: 16px;
+        }
+
+        .search-groups {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f9fafb;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .account-icon {
+            font-size: 20px;
+        }
+
+        .account-info-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .account-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #13182b;
+            border: 3px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .account-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .account-id {
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .groups-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background 0.15s;
+        }
+
+        .groups-header:hover {
+            background: #e5e7eb;
+        }
+
+        .groups-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .groups-chevron {
+            color: #6b7280;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .groups-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .groups-container {
+            display: none;
+        }
+
+        .groups-container.expanded {
+            display: block;
+        }
+
+        .group-item-wrapper {
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .group-item-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .group-item-wrapper:last-child::before {
+            height: 24px;
+        }
+
+        .account-child {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            padding-left: 32px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+            position: relative;
+        }
+
+        .account-child::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 20px;
+            height: 2px;
+            background: #e5e7eb;
+        }
+
+        .account-child:hover {
+            background: #f3f4f6;
+        }
+
+        .account-child.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        .child-chevron {
+            color: #9ca3af;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .child-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .group-children {
+            margin-left: 20px;
+            padding-left: 12px;
+            border-left: 2px solid #e5e7eb;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .group-children.expanded {
+            display: block;
+        }
+
+        .subgroup-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+        }
+
+        .subgroup-item:hover {
+            background: #f3f4f6;
+        }
+
+        .subgroup-item.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: #e8e8ed;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-container {
+            background: #13182b;
+            border-radius: 50px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 15px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            color: #111827;
+        }
+
+        .nav-tab.active {
+            background: #111827;
+            color: white;
+        }
+
+        .tab-icon {
+            font-size: 18px;
+        }
+
+        .user-header {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid #1e2847;
+            background: #13182b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-info {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .header {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            padding: 12px 32px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .breadcrumb-item {
+            color: #6b7280;
+            text-decoration: none;
+        }
+
+        .breadcrumb-separator {
+            color: #d1d5db;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 32px;
+        }
+
+        .page-header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .back-to-accounts {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            border-radius: 8px;
+            color: #00d9ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .back-to-accounts:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            transform: translateX(-2px);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .back-icon {
+            font-size: 16px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 32px;
+            border: 1px solid #1e2847;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 12px 4px;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #111827;
+        }
+
+        .tab.active {
+            color: #111827;
+            border-bottom-color: #111827;
+            font-weight: 500;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 280px;
+            background: #13182b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #13182b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
+            color: #e4e7f0;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .filter-btn:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .create-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .create-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .create-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Table */
+        .table-wrapper {
+            background: #13182b;
+            border-radius: 8px;
+            border: 1px solid #1e2847;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 217, 255, 0.05);
+            border-bottom: 1px solid #00d9ff;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #00d9ff;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 217, 255, 0.08);
+            border-left-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
+        }
+
+        .key-name {
+            font-weight: 500;
+            color: #e4e7f0;
+        }
+
+        .key-value {
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ff88;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+        }
+
+        .group-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #374151;
+        }
+
+        .date-text {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.expiring-soon {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.expired {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .deployment-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .deployment-badge.self-hosted {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .deployment-badge.cloud-hosted {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .delete-btn {
+            padding: 6px 12px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid #dc2626;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #dc2626;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .delete-btn:hover {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: #dc2626;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid #1e2847;
+        }
+
+        .rows-per-page {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .rows-select {
+            padding: 4px 24px 4px 8px;
+            border: 1px solid #1e2847;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .page-info {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .page-nav {
+            display: flex;
+            gap: 4px;
+        }
+
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #1e2847;
+            background: #13182b;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .info-icon {
+            color: #9ca3af;
+            margin-left: 4px;
+            cursor: help;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #13182b;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border: 1px solid #1e2847;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d9ff;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #0a0e17;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-label {
+            display: block;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            border-color: #6366f1;
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .key-display {
+            background: #f9fafb;
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .key-display-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .key-display-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .copy-key-btn {
+            padding: 6px 14px;
+            background: #111827;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .copy-key-btn:hover {
+            background: #1f2937;
+        }
+
+        .copy-key-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .key-display-value {
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            color: #111827;
+            word-break: break-all;
+            line-height: 1.6;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .warning-icon {
+            color: #f59e0b;
+            font-size: 18px;
+        }
+
+        .warning-text {
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .info-box-icon {
+            color: #2563eb;
+            font-size: 18px;
+        }
+
+        .info-box-text {
+            font-size: 13px;
+            color: #1e40af;
+            line-height: 1.5;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border: 1px solid #1e2847;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .cancel-btn {
+            padding: 10px 20px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-btn:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .save-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .save-btn:disabled {
+            background: #374151;
+            color: #6b7280;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Validity Options */
+        .validity-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .validity-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .validity-option:hover {
+            border-color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        .validity-option.active {
+            border-color: #6366f1;
+            background: #eef2ff;
+        }
+
+        .validity-radio {
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .validity-content {
+            flex: 1;
+        }
+
+        .validity-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .validity-description {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .duration-inputs {
+            display: none;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .duration-inputs.active {
+            display: flex;
+        }
+
+        .duration-value {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .duration-unit {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #13182b;
+        }
+
+        .date-input-wrapper {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .date-input-wrapper.active {
+            display: block;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="logo" onclick="navigateToAccounts()">sanas</div>
+            </div>
+            <div class="sidebar-content">
+                <!-- Account Info Card -->
+                <div class="account-info-card">
+                    <div class="account-avatar" id="accountAvatar">UT</div>
+                    <div class="account-title" id="sidebarAccountName">R1RCM</div>
+                    <div class="account-id">Account ID: <span id="sidebarAccountId">R1RCM001</span></div>
+                </div>
+
+                <input type="text" class="search-groups" placeholder="Search Groups...">
+
+                <!-- Groups -->
+                <div class="account-section">
+                    <div id="accountChildren">
+                        <!-- Groups will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <div class="user-header">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">❓</button>
+                    <div class="user-info">Zupudi uday@sa...</div>
+                </div>
+
+                <div class="nav-container">
+                    <a href="#" class="nav-tab" onclick="navigateToHome(event)">
+                        <span class="tab-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-tab active">
+                        <span class="tab-icon">⬇️</span>
+                        <span>API Keys</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToUsers(event)">
+                        <span class="tab-icon">👥</span>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToUsage(event)">
+                        <span class="tab-icon">📊</span>
+                        <span>Usage</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Breadcrumb -->
+            <header class="header">
+                <nav class="breadcrumb">
+                    <a href="accounts.html" class="breadcrumb-item">Sanas</a>
+                    <span class="breadcrumb-separator">›</span>
+                    <a href="#" class="breadcrumb-item">Direct CX</a>
+                    <span class="breadcrumb-separator">›</span>
+                    <span class="breadcrumb-item" id="accountNameBreadcrumb">Carlos Usability ...</span>
+                </nav>
+            </header>
+
+            <div class="content">
+                <div class="page-header-section">
+                    <a href="accounts.html" class="back-to-accounts">
+                        <span class="back-icon">←</span>
+                        <span>Back to Accounts</span>
+                    </a>
+                    <h1 class="page-title">Groups & Users</h1>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab" onclick="switchTab('groups')">Groups</div>
+                    <div class="tab active" onclick="switchTab('apikeys')">API Keys</div>
+                </div>
+
+                <!-- Groups Tab -->
+                <div class="tab-content" id="groups-content">
+                    <div class="toolbar">
+                        <input type="text" class="search-input" placeholder="Search Group">
+                        <div class="toolbar-right">
+                            <select class="filter-btn">
+                                <option>Exclude Subgroups</option>
+                                <option>Include Subgroups</option>
+                            </select>
+                            <button class="create-btn">Create Group</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Group ID <span class="info-icon">ⓘ</span></th>
+                                    <th>App Users <span class="info-icon">ⓘ</span></th>
+                                    <th>Portal Users <span class="info-icon">ⓘ</span></th>
+                                    <th>Sub Groups <span class="info-icon">ⓘ</span></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="key-name">French-Danish</span></td>
+                                    <td><span class="group-badge">MLS4RHRC</span></td>
+                                    <td>5</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="key-name">French-Spanish</span></td>
+                                    <td><span class="group-badge">MLS7572H</span></td>
+                                    <td>5</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="key-name">French-Italian</span></td>
+                                    <td><span class="group-badge">MLS7229W</span></td>
+                                    <td>5</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="key-name">Default Group</span>
+                                        <span class="group-badge" style="background: #dbeafe; color: #1e40af; margin-left: 8px;">Default</span>
+                                    </td>
+                                    <td><span class="group-badge">MLS6YY7Q</span></td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <div class="rows-per-page">
+                                <span>Rows per page:</span>
+                                <select class="rows-select">
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                </select>
+                            </div>
+                            <div class="page-info">1-4 of 4</div>
+                            <div class="page-nav">
+                                <button class="page-btn" disabled>‹</button>
+                                <button class="page-btn" disabled>›</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Keys Tab -->
+                <div class="tab-content active" id="apikeys-content">
+                    <div class="toolbar">
+                        <input type="text" class="search-input" placeholder="Search API Keys">
+                        <div class="toolbar-right">
+                            <select class="filter-btn">
+                                <option>All Status</option>
+                                <option>Active</option>
+                                <option>Expiring Soon</option>
+                                <option>Expired</option>
+                            </select>
+                            <select class="filter-btn" id="deploymentFilter">
+                                <option>All Deployments</option>
+                                <option id="selfHostedOption">Self Hosted</option>
+                                <option>Cloud Hosted</option>
+                            </select>
+                            <select class="filter-btn">
+                                <option>Exclude Subgroups</option>
+                                <option>Include Subgroups</option>
+                            </select>
+                            <button class="create-btn" onclick="openCreateKeyModal()">Create API Key</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Key (Masked)</th>
+                                    <th>Group</th>
+                                    <th>Created At</th>
+                                    <th>Created By</th>
+                                    <th>Expires At</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="apiKeysTable">
+                                <tr>
+                                    <td><span class="key-name">Production Key</span></td>
+                                    <td><span class="key-value">••••p7dc</span></td>
+                                    <td><span class="group-badge">Default Group</span></td>
+                                    <td><span class="date-text">15 Mar 2026</span></td>
+                                    <td><span class="date-text">Zupudi uday</span></td>
+                                    <td><span class="date-text">31 Dec 2026</span></td>
+                                    <td><span class="status-badge active">Active</span></td>
+                                    <td><button class="delete-btn" onclick="deleteKey(0)">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="key-name">Development Key</span></td>
+                                    <td><span class="key-value">••••a3f9</span></td>
+                                    <td><span class="group-badge">French-Danish</span></td>
+                                    <td><span class="date-text">10 Mar 2026</span></td>
+                                    <td><span class="date-text">Carlos Mejia</span></td>
+                                    <td><span class="date-text">22 Mar 2026</span></td>
+                                    <td><span class="status-badge expiring-soon">Expiring Soon</span></td>
+                                    <td><button class="delete-btn" onclick="deleteKey(1)">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="key-name">Test Key</span></td>
+                                    <td><span class="key-value">••••k2m5</span></td>
+                                    <td><span class="group-badge">French-Spanish</span></td>
+                                    <td><span class="date-text">05 Mar 2026</span></td>
+                                    <td><span class="date-text">Kushant Gang</span></td>
+                                    <td><span class="date-text">05 Mar 2026</span></td>
+                                    <td><span class="status-badge expired">Expired</span></td>
+                                    <td><button class="delete-btn" onclick="deleteKey(2)">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="key-name">Staging Key</span></td>
+                                    <td><span class="key-value">••••x8n2</span></td>
+                                    <td><span class="group-badge">French-Italian</span></td>
+                                    <td><span class="date-text">12 Mar 2026</span></td>
+                                    <td><span class="date-text">Harshith Gowda</span></td>
+                                    <td><span class="date-text">30 Sep 2026</span></td>
+                                    <td><span class="status-badge active">Active</span></td>
+                                    <td><button class="delete-btn" onclick="deleteKey(3)">Delete</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <div class="rows-per-page">
+                                <span>Rows per page:</span>
+                                <select class="rows-select">
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                </select>
+                            </div>
+                            <div class="page-info">1-4 of 4</div>
+                            <div class="page-nav">
+                                <button class="page-btn" disabled>‹</button>
+                                <button class="page-btn" disabled>›</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create API Key Modal -->
+    <div class="modal-overlay" id="createKeyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Create API Key</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">API Key Name</label>
+                    <input type="text" class="form-input" id="keyName" value="My first Key" placeholder="Enter key name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Validity</label>
+                    <div class="validity-options">
+                        <div class="validity-option active" onclick="selectValidity('never', this)">
+                            <input type="radio" name="validity" value="never" class="validity-radio" checked>
+                            <div class="validity-content">
+                                <div class="validity-title">Never Expires</div>
+                                <div class="validity-description">API key will remain valid indefinitely</div>
+                            </div>
+                        </div>
+
+                        <div class="validity-option" onclick="selectValidity('duration', this)">
+                            <input type="radio" name="validity" value="duration" class="validity-radio">
+                            <div class="validity-content">
+                                <div class="validity-title">Duration</div>
+                                <div class="validity-description">Set expiration based on time duration</div>
+                                <div class="duration-inputs" id="durationInputs">
+                                    <input type="number" class="duration-value" id="durationValue" placeholder="Enter value" min="1" value="30" onclick="event.stopPropagation()">
+                                    <select class="duration-unit" id="durationUnit" onclick="event.stopPropagation()">
+                                        <option value="minutes">Minutes</option>
+                                        <option value="hours">Hours</option>
+                                        <option value="days" selected>Days</option>
+                                        <option value="weeks">Weeks</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="validity-option" onclick="selectValidity('date', this)">
+                            <input type="radio" name="validity" value="date" class="validity-radio">
+                            <div class="validity-content">
+                                <div class="validity-title">Specific Date</div>
+                                <div class="validity-description">Choose an exact expiration date</div>
+                                <div class="date-input-wrapper" id="dateInputWrapper">
+                                    <input type="date" class="date-input" id="expiryDate" onclick="event.stopPropagation()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="keyTypeLabel">API Key</label>
+                    <div class="warning-box">
+                        <span class="warning-icon">⚠️</span>
+                        <div class="warning-text">
+                            <strong>Important:</strong> This key will only be shown once. Make sure to copy it now and store it securely.
+                        </div>
+                    </div>
+                    <div class="key-display">
+                        <div class="key-display-header">
+                            <span class="key-display-label">Your Key</span>
+                            <button class="copy-key-btn" id="copyKeyBtn" onclick="copyGeneratedKey()">Copy Key</button>
+                        </div>
+                        <div class="key-display-value" id="generatedKey"></div>
+                    </div>
+
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="keyCopiedCheckbox" onchange="toggleSaveButton()">
+                        <label for="keyCopiedCheckbox" class="checkbox-label">I have copied the key</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeCreateKeyModal()">Cancel</button>
+                <button class="save-btn" id="saveKeyBtn" disabled onclick="saveAPIKey()">Create Key</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const accountName = urlParams.get('name') || 'R1RCM';
+        const accountId = urlParams.get('id') || 'R1RCM001';
+        const billingPlansParam = urlParams.get('plans');
+        const billingPlans = billingPlansParam ? JSON.parse(decodeURIComponent(billingPlansParam)) : ['Self Hosted SDK'];
+        const selectedGroupId = urlParams.get('group') || null;
+
+        // Generate initials from account name
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+
+        document.getElementById('accountNameBreadcrumb').textContent = accountName;
+        document.getElementById('sidebarAccountName').textContent = accountName;
+        document.getElementById('sidebarAccountId').textContent = accountId;
+        document.getElementById('accountAvatar').textContent = getInitials(accountName);
+
+        // Group hierarchy data (max 3 levels: Account > Group > Subgroup)
+        const groupHierarchy = [
+            {
+                id: 'production',
+                name: 'Production',
+                children: [
+                    { id: 'oneplus', name: 'OnePlus' },
+                    { id: 'realme', name: 'Real Me' },
+                    { id: 'onepay', name: 'OnePay' }
+                ]
+            },
+            {
+                id: 'staging',
+                name: 'Staging',
+                children: []
+            },
+            {
+                id: 'uat',
+                name: 'UAT',
+                children: []
+            }
+        ];
+
+
+        // Render group hierarchy in sidebar
+        function renderGroupHierarchy() {
+            const container = document.getElementById('accountChildren');
+            container.innerHTML = '';
+
+            groupHierarchy.forEach((group, index) => {
+                const groupWrapper = document.createElement('div');
+                groupWrapper.className = 'group-item-wrapper';
+
+                // Main group element
+                const groupItem = document.createElement('div');
+                groupItem.className = 'account-child' + (selectedGroupId === group.id ? ' selected' : '');
+                groupItem.innerHTML = `
+                    <span>${group.name}</span>
+                    ${group.children.length > 0 ? `<span class="child-chevron">›</span>` : ''}
+                `;
+
+                groupItem.onclick = (e) => {
+                    e.stopPropagation();
+                    if (group.children.length > 0) {
+                        toggleGroupChildren(group.id);
+                    } else {
+                        selectGroup(group.id, group.name);
+                    }
+                };
+
+                groupWrapper.appendChild(groupItem);
+
+                // Subgroups (if any)
+                if (group.children.length > 0) {
+                    const childrenContainer = document.createElement('div');
+                    childrenContainer.className = 'group-children';
+                    childrenContainer.id = `children-${group.id}`;
+
+                    group.children.forEach(subgroup => {
+                        const subgroupItem = document.createElement('div');
+                        subgroupItem.className = 'subgroup-item' + (selectedGroupId === subgroup.id ? ' selected' : '');
+                        subgroupItem.innerHTML = `<span>${subgroup.name}</span>`;
+                        subgroupItem.onclick = (e) => {
+                            e.stopPropagation();
+                            selectGroup(subgroup.id, subgroup.name);
+                        };
+                        childrenContainer.appendChild(subgroupItem);
+                    });
+
+                    groupWrapper.appendChild(childrenContainer);
+                }
+
+                container.appendChild(groupWrapper);
+            });
+        }
+
+        // Toggle expand/collapse of group children
+        function toggleGroupChildren(groupId) {
+            const childrenContainer = document.getElementById(`children-${groupId}`);
+            // Find the parent group item and get its chevron
+            const groupItem = childrenContainer.previousElementSibling;
+            const chevron = groupItem ? groupItem.querySelector('.child-chevron') : null;
+
+            if (childrenContainer.classList.contains('expanded')) {
+                childrenContainer.classList.remove('expanded');
+                if (chevron) chevron.classList.remove('expanded');
+            } else {
+                childrenContainer.classList.add('expanded');
+                if (chevron) chevron.classList.add('expanded');
+            }
+        }
+
+        // Select a group and update the context
+        function selectGroup(groupId, groupName) {
+            const currentPage = window.location.pathname.split('/').pop();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = groupId ? `&group=${encodeURIComponent(groupId)}` : '';
+
+            // Update URL with selected group
+            const newUrl = `${currentPage}?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+            window.location.href = newUrl;
+        }
+
+        // Initialize hierarchy on page load
+        renderGroupHierarchy();
+
+
+        function navigateToAccounts() {
+            window.location.href = 'accounts.html';
+        }
+
+        function navigateToHome(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `account-detail.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToUsage(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `usage.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToUsers(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `users.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName + '-content').classList.add('active');
+
+            // Add active class to selected tab
+            event.target.classList.add('active');
+        }
+
+        function deleteKey(index) {
+            if (confirm('Are you sure you want to delete this API key? This action cannot be undone.')) {
+                const table = document.getElementById('apiKeysTable');
+                table.deleteRow(index);
+                alert('API key deleted successfully');
+            }
+        }
+
+        // Modal functions
+        let generatedAPIKey = '';
+
+        function generateAPIKey() {
+            // Generate unified API key
+            return 'sk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 10);
+        }
+
+        function selectValidity(type, element) {
+            // Update radio buttons
+            document.querySelectorAll('.validity-radio').forEach(radio => {
+                radio.checked = radio.value === type;
+            });
+
+            // Update active states
+            document.querySelectorAll('.validity-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            // Show/hide relevant inputs
+            document.getElementById('durationInputs').classList.toggle('active', type === 'duration');
+            document.getElementById('dateInputWrapper').classList.toggle('active', type === 'date');
+
+            // Set default date if date option selected
+            if (type === 'date') {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('expiryDate').value = tomorrow.toISOString().split('T')[0];
+                document.getElementById('expiryDate').min = tomorrow.toISOString().split('T')[0];
+            }
+        }
+
+        function calculateExpiryDate() {
+            const validityType = document.querySelector('.validity-radio:checked').value;
+
+            if (validityType === 'never') {
+                return null; // No expiry
+            } else if (validityType === 'duration') {
+                const value = parseInt(document.getElementById('durationValue').value);
+                const unit = document.getElementById('durationUnit').value;
+
+                const now = new Date();
+                switch(unit) {
+                    case 'minutes':
+                        now.setMinutes(now.getMinutes() + value);
+                        break;
+                    case 'hours':
+                        now.setHours(now.getHours() + value);
+                        break;
+                    case 'days':
+                        now.setDate(now.getDate() + value);
+                        break;
+                    case 'weeks':
+                        now.setDate(now.getDate() + (value * 7));
+                        break;
+                }
+                return now;
+            } else if (validityType === 'date') {
+                return new Date(document.getElementById('expiryDate').value);
+            }
+        }
+
+        function openCreateKeyModal() {
+            const modal = document.getElementById('createKeyModal');
+            modal.classList.add('active');
+
+            // Generate initial key
+            generatedAPIKey = generateAPIKey();
+            document.getElementById('generatedKey').textContent = generatedAPIKey;
+
+            // Reset form
+            document.getElementById('keyName').value = 'My first Key';
+            document.getElementById('keyCopiedCheckbox').checked = false;
+            document.getElementById('saveKeyBtn').disabled = true;
+
+            // Reset validity to never
+            const neverOption = document.querySelector('.validity-option[onclick*="never"]');
+            selectValidity('never', neverOption);
+        }
+
+        function closeCreateKeyModal() {
+            document.getElementById('createKeyModal').classList.remove('active');
+        }
+
+
+        function copyGeneratedKey() {
+            navigator.clipboard.writeText(generatedAPIKey).then(() => {
+                const btn = document.getElementById('copyKeyBtn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+
+                // Automatically check the "I have copied the key" checkbox
+                document.getElementById('keyCopiedCheckbox').checked = true;
+                toggleSaveButton();
+            });
+        }
+
+        function toggleSaveButton() {
+            const checkbox = document.getElementById('keyCopiedCheckbox');
+            const saveBtn = document.getElementById('saveKeyBtn');
+            saveBtn.disabled = !checkbox.checked;
+        }
+
+        function saveAPIKey() {
+            const keyName = document.getElementById('keyName').value.trim() || 'My first Key';
+
+            // Get masked key (last 4 characters)
+            const maskedKey = '••••' + generatedAPIKey.slice(-4);
+
+            // Get current date
+            const today = new Date();
+            const createdDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            // Calculate expiry date based on validity selection
+            const expiryDate = calculateExpiryDate();
+            let expiryDateStr, status, statusClass;
+
+            if (expiryDate === null) {
+                // Never expires
+                expiryDateStr = 'Never';
+                status = 'Active';
+                statusClass = 'active';
+            } else {
+                expiryDateStr = expiryDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                // Calculate status
+                const daysUntilExpiry = Math.floor((expiryDate - today) / (1000 * 60 * 60 * 24));
+                if (daysUntilExpiry > 7) {
+                    status = 'Active';
+                    statusClass = 'active';
+                } else if (daysUntilExpiry > 0) {
+                    status = 'Expiring Soon';
+                    statusClass = 'expiring-soon';
+                } else {
+                    status = 'Expired';
+                    statusClass = 'expired';
+                }
+            }
+
+            // Add new row to table
+            const table = document.getElementById('apiKeysTable');
+            const newRow = table.insertRow(0); // Insert at top
+
+            newRow.innerHTML = `
+                <td><span class="key-name">${keyName}</span></td>
+                <td><span class="key-value">${maskedKey}</span></td>
+                <td><span class="group-badge">Default Group</span></td>
+                <td><span class="date-text">${createdDate}</span></td>
+                <td><span class="date-text">Zupudi uday</span></td>
+                <td><span class="date-text">${expiryDateStr}</span></td>
+                <td><span class="status-badge ${statusClass}">${status}</span></td>
+                <td><button class="delete-btn" onclick="deleteKey(0)">Delete</button></td>
+            `;
+
+            // Close modal
+            closeCreateKeyModal();
+
+            // Show success message
+            alert(`API Key "${keyName}" created successfully!`);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('createKeyModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCreateKeyModal();
+            }
+        });
+    </script>
+</body>
+</html>

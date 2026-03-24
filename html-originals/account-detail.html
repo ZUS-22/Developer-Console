@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Detail - Sanas Developer Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0a0e17;
+            color: #e4e7f0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border: 1px solid #1e2847;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #6b7280;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #00d9ff;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        .logo::before {
+            content: '◆';
+            color: #00d9ff;
+            font-size: 12px;
+        }
+
+        .sidebar-content {
+            padding: 16px;
+            flex: 1;
+        }
+
+        .search-groups {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            background: #13182b;
+        }
+
+        /* Account Section */
+        .account-section {
+            margin-bottom: 16px;
+        }
+
+        .account-info-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .account-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #13182b;
+            border: 3px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .account-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .account-id {
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .groups-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background 0.15s;
+        }
+
+        .groups-header:hover {
+            background: #e5e7eb;
+        }
+
+        .groups-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .groups-chevron {
+            color: #6b7280;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .groups-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .groups-container {
+            display: none;
+        }
+
+        .groups-container.expanded {
+            display: block;
+        }
+
+        .dropdown-chevron {
+            color: #9ca3af;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .dropdown-chevron.expanded {
+            transform: rotate(180deg);
+        }
+
+        .account-children {
+            padding-left: 24px;
+        }
+
+        .group-item-wrapper {
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .group-item-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .group-item-wrapper:last-child::before {
+            height: 24px;
+        }
+
+        .account-child {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            padding-left: 32px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+            position: relative;
+        }
+
+        .account-child::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 20px;
+            height: 2px;
+            background: #e5e7eb;
+        }
+
+        .account-child:hover {
+            background: #f3f4f6;
+        }
+
+        .account-child.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        .child-chevron {
+            color: #9ca3af;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .child-chevron.expanded {
+            transform: rotate(90deg);
+        }
+
+        .group-children {
+            margin-left: 20px;
+            padding-left: 12px;
+            border-left: 2px solid #e5e7eb;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .group-children.expanded {
+            display: block;
+        }
+
+        .subgroup-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: background 0.15s;
+            background: #f9fafb;
+        }
+
+        .subgroup-item:hover {
+            background: #f3f4f6;
+        }
+
+        .subgroup-item.selected {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        .nav-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+        }
+
+        .nav-item:hover {
+            background: #f9fafb;
+        }
+
+        .nav-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-subtitle {
+            font-size: 11px;
+            color: #9ca3af;
+            padding: 4px 12px 8px;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        .header {
+            width: 100%;
+            background: #e8e8ed;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-container {
+            background: #13182b;
+            border-radius: 50px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 15px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            color: #111827;
+        }
+
+        .nav-tab.active {
+            background: #111827;
+            color: white;
+        }
+
+        .tab-icon {
+            font-size: 18px;
+        }
+
+        /* Content */
+        .content {
+            width: 100%;
+            max-width: 900px;
+            padding: 48px 32px;
+        }
+
+        .page-header-section {
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .back-to-accounts {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            border-radius: 8px;
+            color: #00d9ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-to-accounts:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            transform: translateY(-50%) translateX(-2px);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .back-icon {
+            font-size: 16px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e4e7f0;
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+            color: #6b7280;
+        }
+
+        /* SDK Key Section */
+        .key-section {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .key-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .key-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        .create-key-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .create-key-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .create-key-btn:active {
+            transform: translateY(0);
+        }
+
+        .key-item {
+            padding: 20px;
+            background: #f9fafb;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .key-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .key-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        .key-expires {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .key-value-container {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .key-value {
+            flex: 1;
+            padding: 12px 16px;
+            background: #0a0e17;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            color: #00ff88;
+            letter-spacing: -0.2px;
+            font-weight: 500;
+        }
+
+        .key-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #00d9ff;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d9ff;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #0a0e17;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .cancel-btn {
+            padding: 10px 20px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #e4e7f0;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-btn:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .save-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .new-key-form {
+            display: none;
+            padding: 20px;
+            background: #f9fafb;
+            border: 1px solid #1e2847;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .new-key-form.active {
+            display: block;
+        }
+
+        /* Quick Start Section */
+        .quickstart-section {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e4e7f0;
+        }
+
+        .section-description {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 28px;
+        }
+
+        .code-block-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d9ff;
+            margin-bottom: 12px;
+        }
+
+        .code-block {
+            background: #1f2937;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            color: #e5e7eb;
+            line-height: 1.7;
+            overflow-x: auto;
+            font-weight: 400;
+            letter-spacing: -0.2px;
+        }
+
+        .code-copy-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 8px 16px;
+            background: #374151;
+            color: #e5e7eb;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .code-copy-btn:hover {
+            background: #4b5563;
+        }
+
+        .doc-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6366f1;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .doc-link:hover {
+            text-decoration: underline;
+        }
+
+        .code-comment {
+            color: #9ca3af;
+        }
+
+        .code-string {
+            color: #34d399;
+        }
+
+        .code-keyword {
+            color: #a78bfa;
+        }
+
+        /* Zero State */
+        .zero-state {
+            padding: 48px 32px;
+            text-align: center;
+            background: #f9fafb;
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .zero-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .zero-state-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e4e7f0;
+        }
+
+        .zero-state-description {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .zero-state-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .zero-state-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .get-started-locked {
+            padding: 48px 32px;
+            text-align: center;
+            background: #f9fafb;
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .locked-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .locked-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e4e7f0;
+        }
+
+        .locked-description {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .user-header {
+            position: absolute;
+            top: 16px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid #1e2847;
+            background: #13182b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-info {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Playground Section */
+        .playground-section {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+
+        .playground-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .playground-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        .coming-soon-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .playground-description {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .playground-preview {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border: 2px dashed #c7d2fe;
+            border-radius: 8px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .playground-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .playground-preview-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4338ca;
+            margin-bottom: 8px;
+        }
+
+        .playground-preview-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="logo" onclick="navigateToAccounts()">sanas</div>
+            </div>
+            <div class="sidebar-content">
+                <!-- Account Info Card -->
+                <div class="account-info-card">
+                    <div class="account-avatar" id="accountAvatar">UT</div>
+                    <div class="account-title" id="sidebarAccountName">R1RCM</div>
+                    <div class="account-id">Account ID: <span id="sidebarAccountId">R1RCM001</span></div>
+                </div>
+
+                <input type="text" class="search-groups" placeholder="Search Groups...">
+
+                <!-- Groups -->
+                <div class="account-section">
+                    <div id="accountChildren">
+                        <!-- Groups will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <header class="header">
+                <div class="user-header">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">❓</button>
+                    <div class="user-info">Zupudi uday@sa...</div>
+                </div>
+
+                <div class="nav-container">
+                    <a href="#" class="nav-tab active">
+                        <span class="tab-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToAPIKeys(event)">
+                        <span class="tab-icon">⬇️</span>
+                        <span>API Keys</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToUsers(event)">
+                        <span class="tab-icon">👥</span>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="nav-tab" onclick="navigateToUsage(event)">
+                        <span class="tab-icon">📊</span>
+                        <span>Usage</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <div class="page-header-section">
+                    <a href="accounts.html" class="back-to-accounts">
+                        <span class="back-icon">←</span>
+                        <span>Back to Accounts</span>
+                    </a>
+                    <h1 class="page-title" id="accountNameTitle">Carlos Usability ...</h1>
+                    <p class="page-subtitle">Manage your SDK keys and get started with the Sanas API</p>
+                </div>
+
+                <!-- SDK Keys Section (only visible if Self Hosted subscription exists) -->
+                <div class="key-section" id="selfHostedKeysSection" style="display: none;">
+                    <div class="key-header">
+                        <h2 class="key-title">Self Hosted SDK Keys</h2>
+                        <button class="create-key-btn" onclick="toggleNewKeyForm()">+ Create New Key</button>
+                    </div>
+
+                    <!-- New Key Form -->
+                    <div class="new-key-form" id="newKeyForm">
+                        <div class="form-group">
+                            <label class="form-label">Key Name</label>
+                            <input type="text" class="form-input" id="keyName" placeholder="e.g., Production Key">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expires At</label>
+                            <input type="date" class="form-input" id="keyExpiry">
+                        </div>
+                        <div class="form-actions">
+                            <button class="cancel-btn" onclick="toggleNewKeyForm()">Cancel</button>
+                            <button class="save-btn" onclick="createNewKey()">Create Key</button>
+                        </div>
+                    </div>
+
+                    <!-- Existing Keys -->
+                    <div id="keysList">
+                        <!-- Keys will be added here -->
+                    </div>
+
+                    <!-- Zero State -->
+                    <div class="zero-state" id="zeroState">
+                        <div class="zero-state-icon">🔑</div>
+                        <h3 class="zero-state-title">No API Keys Yet</h3>
+                        <p class="zero-state-description">Create your first API key to start using the Sanas Self Hosted SDK</p>
+                        <button class="zero-state-btn" onclick="toggleNewKeyForm()">Create Your First API Key</button>
+                    </div>
+                </div>
+
+                <!-- Get Started Section (always visible) -->
+                <div class="quickstart-section" id="quickstartSection">
+                    <h2 class="section-title">Get Started</h2>
+                    <p class="section-description">Get started with the Sanas Self Hosted SDK by downloading and running your first model.</p>
+
+                    <div class="code-block-header">1. Download the SDK</div>
+                    <div class="code-block">
+                        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre><code><span class="code-comment"># Install the Sanas SDK</span>
+pip install sanas-sdk
+
+<span class="code-comment"># Or download directly</span>
+curl -O https://sdk.sanas.ai/latest/sanas-sdk.tar.gz
+tar -xzf sanas-sdk.tar.gz</code></pre>
+                    </div>
+
+                    <div class="code-block-header">2. Initialize and run a model</div>
+                    <div class="code-block">
+                        <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre><code><span class="code-keyword">from</span> sanas_sdk <span class="code-keyword">import</span> SanasClient
+
+<span class="code-comment"># Initialize the client with your API key</span>
+client = SanasClient(api_key=<span class="code-string">"YOUR_API_KEY"</span>)
+
+<span class="code-comment"># Run accent translation</span>
+result = client.translate_accent(
+    audio_file=<span class="code-string">"input.wav"</span>,
+    target_accent=<span class="code-string">"us-english"</span>
+)
+
+<span class="code-comment"># Save the output</span>
+result.save(<span class="code-string">"output.wav"</span>)
+print(<span class="code-string">"Translation complete!"</span>)</code></pre>
+                    </div>
+
+                    <a href="https://developer.sanas.ai" target="_blank" class="doc-link">
+                        📚 View full documentation
+                        <span>→</span>
+                    </a>
+                </div>
+
+                <!-- Sanas Playground Section -->
+                <div class="playground-section">
+                    <div class="playground-header">
+                        <h2 class="playground-title">Sanas Playground</h2>
+                        <span class="coming-soon-badge">Coming Soon</span>
+                    </div>
+                    <p class="playground-description">Test and experiment with Sanas APIs directly in your browser without writing any code.</p>
+
+                    <div class="playground-preview">
+                        <div class="playground-icon">🎮</div>
+                        <h3 class="playground-preview-title">Interactive API Testing</h3>
+                        <p class="playground-preview-text">Try out accent translation, noise cancellation, and more with our interactive playground interface.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Store full API keys (in real app, these would come from backend)
+        const fullKeys = {
+            'Production Key': 'sk_live_4eC39HqLyjWDarjtT1zdp7dc'
+        };
+
+        // Get account info from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const accountName = urlParams.get('name') || 'R1RCM';
+        const accountId = urlParams.get('id') || 'R1RCM001';
+        const billingPlansParam = urlParams.get('plans');
+        const billingPlans = billingPlansParam ? JSON.parse(decodeURIComponent(billingPlansParam)) : ['Self Hosted SDK'];
+        const selectedGroupId = urlParams.get('group') || null;
+
+        // Group hierarchy data (max 3 levels: Account > Group > Subgroup)
+        const groupHierarchy = [
+            {
+                id: 'production',
+                name: 'Production',
+                children: [
+                    { id: 'oneplus', name: 'OnePlus' },
+                    { id: 'realme', name: 'Real Me' },
+                    { id: 'onepay', name: 'OnePay' }
+                ]
+            },
+            {
+                id: 'staging',
+                name: 'Staging',
+                children: []
+            },
+            {
+                id: 'uat',
+                name: 'UAT',
+                children: []
+            }
+        ];
+
+        // Generate initials from account name
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+
+        // Update page with account info
+        document.getElementById('accountNameTitle').textContent = accountName;
+        document.getElementById('sidebarAccountName').textContent = accountName;
+        document.getElementById('sidebarAccountId').textContent = accountId;
+        document.getElementById('accountAvatar').textContent = getInitials(accountName);
+
+        // Check if account has Self Hosted SDK subscription
+        const hasSelfHostedSubscription = billingPlans.includes('Self Hosted SDK');
+        const selfHostedKeysSection = document.getElementById('selfHostedKeysSection');
+
+        if (hasSelfHostedSubscription) {
+            selfHostedKeysSection.style.display = 'block';
+        } else {
+            selfHostedKeysSection.style.display = 'none';
+        }
+
+        // Check if there are any keys and update UI
+        function updateUIState() {
+            const keysList = document.getElementById('keysList');
+            const zeroState = document.getElementById('zeroState');
+            const hasKeys = keysList.children.length > 0;
+
+            if (hasSelfHostedSubscription) {
+                // Update SDK keys section
+                if (hasKeys) {
+                    zeroState.style.display = 'none';
+                } else {
+                    zeroState.style.display = 'block';
+                }
+            }
+
+            // Get Started section is always visible now
+        }
+
+        // Initialize UI state
+        updateUIState();
+
+        function navigateToAccounts() {
+            window.location.href = 'accounts.html';
+        }
+
+        function navigateToAPIKeys(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `api-keys.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToUsers(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `users.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+        function navigateToUsage(event) {
+            event.preventDefault();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = selectedGroupId ? `&group=${encodeURIComponent(selectedGroupId)}` : '';
+            window.location.href = `usage.html?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+        }
+
+
+        // Render group hierarchy in sidebar
+        function renderGroupHierarchy() {
+            const container = document.getElementById('accountChildren');
+            container.innerHTML = '';
+
+            groupHierarchy.forEach((group, index) => {
+                const groupWrapper = document.createElement('div');
+                groupWrapper.className = 'group-item-wrapper';
+
+                // Main group element
+                const groupItem = document.createElement('div');
+                groupItem.className = 'account-child' + (selectedGroupId === group.id ? ' selected' : '');
+                groupItem.innerHTML = `
+                    <span>${group.name}</span>
+                    ${group.children.length > 0 ? `<span class="child-chevron">›</span>` : ''}
+                `;
+
+                groupItem.onclick = (e) => {
+                    e.stopPropagation();
+                    if (group.children.length > 0) {
+                        toggleGroupChildren(group.id);
+                    } else {
+                        selectGroup(group.id, group.name);
+                    }
+                };
+
+                groupWrapper.appendChild(groupItem);
+
+                // Subgroups (if any)
+                if (group.children.length > 0) {
+                    const childrenContainer = document.createElement('div');
+                    childrenContainer.className = 'group-children';
+                    childrenContainer.id = `children-${group.id}`;
+
+                    group.children.forEach(subgroup => {
+                        const subgroupItem = document.createElement('div');
+                        subgroupItem.className = 'subgroup-item' + (selectedGroupId === subgroup.id ? ' selected' : '');
+                        subgroupItem.innerHTML = `<span>${subgroup.name}</span>`;
+                        subgroupItem.onclick = (e) => {
+                            e.stopPropagation();
+                            selectGroup(subgroup.id, subgroup.name);
+                        };
+                        childrenContainer.appendChild(subgroupItem);
+                    });
+
+                    groupWrapper.appendChild(childrenContainer);
+                }
+
+                container.appendChild(groupWrapper);
+            });
+        }
+
+        // Toggle expand/collapse of group children
+        function toggleGroupChildren(groupId) {
+            const childrenContainer = document.getElementById(`children-${groupId}`);
+            // Find the parent group item and get its chevron
+            const groupItem = childrenContainer.previousElementSibling;
+            const chevron = groupItem ? groupItem.querySelector('.child-chevron') : null;
+
+            if (childrenContainer.classList.contains('expanded')) {
+                childrenContainer.classList.remove('expanded');
+                if (chevron) chevron.classList.remove('expanded');
+            } else {
+                childrenContainer.classList.add('expanded');
+                if (chevron) chevron.classList.add('expanded');
+            }
+        }
+
+        // Select a group and update the context
+        function selectGroup(groupId, groupName) {
+            const currentPage = window.location.pathname.split('/').pop();
+            const plans = encodeURIComponent(JSON.stringify(billingPlans));
+            const groupParam = groupId ? `&group=${encodeURIComponent(groupId)}` : '';
+
+            // Update URL with selected group
+            const newUrl = `${currentPage}?name=${encodeURIComponent(accountName)}&id=${encodeURIComponent(accountId)}&plans=${plans}${groupParam}`;
+            window.location.href = newUrl;
+        }
+
+        // Initialize hierarchy on page load
+        renderGroupHierarchy();
+
+        function toggleNewKeyForm() {
+            const form = document.getElementById('newKeyForm');
+            form.classList.toggle('active');
+            if (form.classList.contains('active')) {
+                document.getElementById('keyName').focus();
+            } else {
+                document.getElementById('keyName').value = '';
+                document.getElementById('keyExpiry').value = '';
+            }
+        }
+
+        function maskKey(fullKey) {
+            const last4 = fullKey.slice(-4);
+            const prefix = fullKey.split('_')[0] + '_' + fullKey.split('_')[1] + '_';
+            return prefix + '••••••••••••••••' + last4;
+        }
+
+        function createNewKey() {
+            const keyName = document.getElementById('keyName').value;
+            const keyExpiry = document.getElementById('keyExpiry').value;
+
+            if (!keyName || !keyExpiry) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Generate a random API key
+            const apiKey = 'sk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            fullKeys[keyName] = apiKey;
+
+            // Format expiry date
+            const expiryDate = new Date(keyExpiry).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            // Create new key item
+            const keyItem = document.createElement('div');
+            keyItem.className = 'key-item';
+            keyItem.innerHTML = `
+                <div class="key-item-header">
+                    <span class="key-name">${keyName}</span>
+                    <span class="key-expires">Expires: ${expiryDate}</span>
+                </div>
+                <div class="key-value-container">
+                    <input type="text" class="key-value" value="${maskKey(apiKey)}" readonly>
+                    <div class="key-actions">
+                        <button class="action-btn" onclick="showFullKey(this)">Show</button>
+                        <button class="action-btn" onclick="copyKey(this)">Copy</button>
+                    </div>
+                </div>
+            `;
+
+            // Add to keys list
+            document.getElementById('keysList').appendChild(keyItem);
+
+            // Update UI state
+            updateUIState();
+
+            // Close form
+            toggleNewKeyForm();
+
+            // Show success message
+            alert(`API key "${keyName}" created successfully!\n\nFull key: ${apiKey}\n\nMake sure to copy it now - you won't be able to see it again!`);
+        }
+
+        function showFullKey(button) {
+            const keyInput = button.closest('.key-value-container').querySelector('.key-value');
+            const keyName = button.closest('.key-item').querySelector('.key-name').textContent;
+            const fullKey = fullKeys[keyName];
+
+            if (button.textContent === 'Show') {
+                keyInput.value = fullKey;
+                button.textContent = 'Hide';
+            } else {
+                keyInput.value = maskKey(fullKey);
+                button.textContent = 'Show';
+            }
+        }
+
+        function copyKey(button) {
+            const keyInput = button.closest('.key-value-container').querySelector('.key-value');
+            const keyName = button.closest('.key-item').querySelector('.key-name').textContent;
+            const fullKey = fullKeys[keyName];
+
+            // Copy the full key to clipboard
+            navigator.clipboard.writeText(fullKey).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const text = codeBlock.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

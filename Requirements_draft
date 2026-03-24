@@ -1,0 +1,864 @@
+Sanas PRD rating agent score
+
+Principles
+
+The Developer Console will maintain design and user-experience continuity with existing Sanas portal. The implementation will maximize reuse of the Sanas backend, while the subscription model, billing plans, and feature management framework will remain principally unchanged with few necessary changes.
+
+Important Pre-Read
+
+The target URL for the Developer Console will be console.sanas.ai. The admin panel for the Developer Console will follow a structure similar to Portal v3.
+
+At the top level, Sanas will act as the root folder. Under this, the System Groups will include Enterprise and Self Serve, representing enterprise SDK users and self-serve SDK users, respectively.
+
+At the System Group level, the interface will include two tabs: Accounts and Sanas Members. The Homepage will not be visible for now. The primary role supported will be Sanas Admin, who will have the ability to create accounts on the Developer Console.
+
+There will be no changes to the Invite and Manage Access flows at the Sanas group or System Group level.
+
+A new billing plan will be created to support the MVP requirements of the SDK.
+
+Billing Plan Name: Sanas SDK
+
+The plan will include a start date and end date.
+
+Initially, the plan will not enforce license limits or minute caps.
+
+When subscribed to the billing plan Sanas SDK, the users of the account with a valid API keys shall be able to use all the features available with the billing plan Sanas SDK
+
+For example - If Sanas SDK billing plan comes with AT, NC features and not LT feature, the LT feature cannot be consumed through portal and Sanas SDK billing plan
+
+All events and the usage data will be captured and populated in the UTC timezone
+
+
+
+Out of Scope
+
+
+
+Billing plan creation and management
+
+Consumption of billing plan
+
+Account deactivation processes
+
+Account deletion workflows
+
+Data deletion and retention policies
+
+No custom roles
+
+Requirements
+
+Requirements Summary
+
+Feature Type Definition:
+
+FR - Functional Requirement
+
+NFR - Non-Functional Requirement
+
+Priority
+
+Type
+
+Req no
+
+Requirement
+
+Description
+
+HIGH
+
+FR
+
+UJ1
+
+Sanas admin provisions an account on developer console
+
+Describes how a Sanas admin creates and manages developer accounts through the admin panel. The flow includes creating a new developer account,  sending a welcome email, viewing and managing accounts, and maintaining audit logs for administrative actions.
+
+HIGH
+
+FR
+
+UJ2
+
+Logs into Developer console
+
+Defines how developers authenticate and access the Sanas Developer Console using a passwordless login flow. The process includes email verification through a one-time passcode, session management, error handling for unauthorized access, and the post-login experience for first-time and returning users.
+
+HIGH
+
+FR
+
+UJ3
+
+API Key Creation
+
+Explains how developers generate API keys to access sanas models. The flow includes API key creation, naming conventions, key generation, expiration rules, and secure one-time visibility of the generated key.
+
+HIGH
+
+FR
+
+UJ4
+
+API Key Management
+
+Covers how developers view, manage, and delete API keys within the developer console. The interface includes an API key dashboard with status indicators, sorting and filtering capabilities, and a deletion workflow for invalidating keys.
+
+HIGH
+
+FR
+
+UJ5
+
+Usage Tracking
+
+
+
+🎨 Requirement Details
+
+User Journey 1 (Sanas admin provisions an account on Developer Console)
+
+As a Sanas admin, I should be able to create an account on the developer console
+
+Acceptance Criteria
+
+Account Creation
+
+An admin logs into the Developer Console admin panel (console.sanas.ai) and selects “Create Developer Account.”
+
+The following information is prompted
+
+Account Name (required)
+
+Account Admin
+
+Parent Group - One of Enterprise or Self Serve
+
+Billing Plan – Sanas SDK
+
+On submission:
+
+The system creates the account
+
+A welcome email is sent to the Account Admin
+
+Welcome Email
+
+The welcome email includes a login link and a “Login to Console” CTA.
+
+Subject:
+Welcome to Sanas Developer Console
+
+Body:
+
+Hi {{Developer Name}},
+
+Your Sanas Developer Console account has been successfully created.
+
+You can now log in to the Developer Console and begin building.
+
+Login to Console:
+{{Login Link}}
+
+If you need assistance, please contact Sanas Support.
+
+Best regards,
+Sanas Team
+
+
+
+{{Developer Name}} - For the email xxx@abc.com, xxx
+
+Account List
+
+(Aligned with the existing v3 construct)
+
+Admins can view all developer accounts with the following details:
+
+Account Name
+
+Account ID
+
+Account Admins
+
+Billing Plan
+
+Created On
+
+Created By
+
+Capabilities:
+
+Search by Account Name
+
+Search by Account Admin email id
+
+Sort by Account ID and Created On
+
+Available Actions:
+
+View Details
+
+Edit Subscriptions
+
+Error Handling
+
+(Aligned with the existing v3 construct)
+
+Duplicate email: “An user account with this email already exists.”
+
+Invalid email: “Please enter a valid email address.”
+
+Audit Logging
+
+(Aligned with the existing v3 construct)
+
+The system logs the following details:
+
+Admin User
+
+Timestamp
+
+Account Name
+
+Account Admin Email
+
+Action
+
+Retention:
+
+Logs are accessible through the UI for 60 days
+
+Data remains persisted in the database
+
+‌
+
+User Journey 2 (Logs into Sanas Developer Console)
+
+As a developer / account admin / customer portal user, I should be able to login to the Sanas developer console to create and manage API keys, view usage data for the billing plan I subscribed
+
+Acceptance Criteria
+
+Login Flow
+
+The developer / console user navigates to console.sanas.ai and enters their email address.
+
+If the account exists, the system sends a 6-digit passcode to the registered email.
+
+If the account does not exist, the system displays the following error:
+
+Error Message:
+“Account not found. Your account does not have access to the Sanas Developer Console. Please contact Sanas Support.”
+
+Passcode Email
+
+Subject:
+Login to your Sanas Developer Console
+
+Body:
+
+Verify your Sanas Developer Account.
+
+Use the passcode below to complete your login.
+
+This passcode is valid for the next 30 minutes.
+Do not share it with anyone.
+
+Passcode Verification
+
+(Aligned with the existing v3 construct)
+
+The passcode expires after 30 minutes
+
+The developer enters the passcode to continue
+
+Outcomes:
+
+Success: Redirects the developer to the Developer Console dashboard
+
+Failure: Displays the error
+“Invalid or expired passcode.”
+
+Resend Functionality
+
+(Aligned with the existing v3 construct)
+
+A “Resend Passcode” button is available on the verification screen
+
+The button is disabled for 60 seconds after each passcode is sent
+
+Session Management
+
+(Aligned with the existing v3 construct)
+
+User sessions expire after 7 days of inactivity
+
+
+
+User Journey 3 (Organize API Keys in groups)
+
+As a developer, account admin, or portal user, I should be able to create groups and subgroups in the developer console so that I can organize my API keys according to my preferred structure.
+
+Acceptance Criteria
+
+Group Hierarchy
+
+Supports 3 layers of nesting
+
+
+Create Group
+
+(Aligned with the existing v3 construct)
+
+Users can create a group by clicking the “Create Group” button.
+
+Form Fields:
+
+Group Name
+
+Validation Rules:
+
+Group name is required
+
+Group name must be unique within the same parent level
+
+Duplicate group names are allowed across different parent groups
+
+Group Management
+
+(Aligned with the existing v3 construct)
+
+Delete Group
+
+Displays a confirmation modal
+
+A group cannot be deleted if it contains API keys, including those within any subgroups
+
+Include Subgroups
+
+(Aligned with the existing v3 construct)
+
+The “Include Subgroups” option displays all API keys within the selected group and its subgroups.
+
+
+
+User Journey 4 (Create an API Key)
+
+As a developer, I should be able to create named API keys to authenticate usage of the Sanas SDK.
+
+Acceptance Criteria
+
+Initiate Creation
+
+The developer navigates to the Dashboard
+
+Clicks the “Create API Key” button
+
+API Key Creation Form
+
+Form Fields:
+
+API Key Name
+
+Required
+
+Minimum 3 characters
+
+Maximum 64 characters
+
+All characters allowed
+
+Additional Information:
+
+Expiration Notice:
+“This key will expire in 60 days.”
+
+Create Key button
+
+Key Generation
+
+A secure API key is generated upon submission
+
+Format:
+sk_{32 random alphanumeric characters}
+
+Expiration:
+
+The key expires 60 days after creation
+
+Success Modal
+
+After successful creation, a modal displays the generated API key.
+
+Contents:
+
+“Your API Key” (full key visible)
+
+Copy button → Copies the key to clipboard
+
+Warning:
+“Save this key now. You won't be able to see it again.”
+
+Confirmation Requirement:
+
+Checkbox: “I have saved this key” (unchecked by default) - If the key copied to clipboard (i.e. actioned on copy button) this gets selected without manual user selection
+
+Done button remains disabled until the checkbox is selected
+
+Duplicate Names
+
+Duplicate API key names are allowed
+
+If a key with the same name already exists and is active, the system automatically appends a numeric suffix:
+
+(1), (2), (3), etc.
+
+The suffix applied will be the highest existing suffix for that account and key name + 1.
+
+‌
+
+User Journey 5 (API Key Management)
+
+As a developer, I should be able to view, manage, and delete my API keys from the Developer Console.
+
+Acceptance Criteria
+
+API Keys Dashboard
+
+The dashboard includes an “API Keys” section displaying all created API keys.
+
+Table Structure
+
+Columns:
+
+Name
+
+Key (masked)
+
+Group
+
+Created At
+
+Created By
+
+Expires At
+
+Status
+
+Actions
+
+Example Row
+
+Production Key | sk_****0987 | India | Jan 15, 2026 | Mar 16, 2026 | Active | Delete
+
+Status Indicators
+
+Each API key displays a status based on its expiration timeline:
+
+Active – More than 7 days remaining before expiration; key is valid
+
+Expiring Soon – Less than 7 days remaining before expiration; key remains functional
+
+Expired – Past the expiration date; key is no longer functional
+
+Delete Functionality
+
+Developers can delete an API key from the Actions column.
+
+Flow:
+
+Click the Delete button next to the desired API key
+
+A confirmation modal appears
+
+Modal Details
+
+Title: Delete this API Key
+
+Message: “This action cannot be undone.”
+
+The API key name is displayed for clarity
+
+Actions:
+
+Cancel – Closes the modal with no changes
+
+Delete – Permanently invalidates the key
+
+On Delete:
+
+The API key is immediately invalidated
+
+The key is removed from the active list
+
+The database performs a soft delete (key retained with a deleted_at timestamp)
+
+Success Message:
+
+“The key has been deleted and is no longer valid for use.”
+
+Sort & Filter
+
+Developers can organize the table using the following options:
+
+Sort By:
+
+Created Date
+
+Expiration Date
+
+Name (alphabetical)
+
+Filter:
+
+Status (default view: All)
+
+
+
+User Journey 4 (Invite & Manage Team Members)
+
+As a Console Admin, I should be able to invite and manage team members who need access to the Developer Console.
+
+Acceptance Criteria
+
+Invite Console Users
+
+(Aligned with the existing v3 construct)
+
+Console users can be invited at either the account level or group level.
+
+Flow:
+
+Click “Invite Users” CTA
+
+Admin enters:
+
+Email address
+
+Role selection
+
+An invitation email is sent to the user upon submission.
+
+Access Control (RBAC)
+
+Role-Based Access Control (RBAC) applies to all console users.
+Users can only view and perform actions within the hierarchy defined by their assigned scope.
+
+Roles
+
+Account Admin
+
+Manage all team members
+
+Manage all API keys across the account
+
+View usage across the entire account
+
+Manage groups (create, update, delete)
+
+Group Admin
+
+Manage team members within their assigned group scope
+
+Grant or restrict access within the group
+
+Manage API keys within their scope
+
+View usage within their group scope
+
+Manage groups within their scope
+
+Member
+
+Create API keys within their assigned scope
+
+View usage within groups they have access to
+
+Permissions Matrix
+
+Action
+
+Account Admin
+
+Group Admin
+
+Member
+
+Create API Key
+
+All Groups
+
+In Scope
+
+In Scope
+
+Delete API Key
+
+✅
+
+✅
+
+❌
+
+Create / Update Groups
+
+✅
+
+In Scope
+
+❌
+
+View Usage
+
+All
+
+In Scope
+
+In Scope
+
+Invite Users
+
+✅
+
+In Scope
+
+❌
+
+Deactivate Users
+
+✅
+
+❌
+
+❌
+
+Manage User Access
+
+✅
+
+In Scope
+
+❌
+
+View Console Users
+
+(Aligned with the existing v3 construct)
+
+Admins can view all console users with the following capabilities:
+
+Columns:
+
+Name
+
+Email
+
+Status
+
+The status of the users is one among - 
+
+Activated (User logged into the console)
+
+Invitation Sent
+
+Invitation Expired
+
+Deactivated (no longer has access to console)
+
+Filters:
+
+Role
+
+Status
+
+Sorting:
+
+Name
+
+Created On
+
+Search:
+
+Search by user name or email address
+
+Edit Access
+
+(Aligned with the existing v3 construct)
+
+Admins (Account Admin, and Group Admin) can modify roles and access scope
+
+Members cannot edit their own role
+
+Pending Invitations
+
+Users who have not yet accepted the invitation remain in a Pending Invitation state.
+
+On the first login, pending invitation state changes to the Activated
+
+Admins can resend the invitation to users in this state.
+
+
+
+User Journey 5 (View Usage)
+
+As a console user, I should be able to view, analyze, and export SDK usage data from the Developer Console.
+
+Acceptance Criteria
+
+Usage Dashboard
+
+The Usage Dashboard displays SDK consumption metrics through visual charts.
+
+Two separate line charts are available:
+
+Number of API Requests Processed
+
+Number of Minutes of Audio Processed
+(Metrics may vary depending on the model or endpoint being used.)
+
+Filters
+
+Developers can refine the usage data using the following filters:
+
+API Key
+
+Dropdown with multi-select
+
+Default selection: All Keys
+
+Features
+
+Multi-select
+
+Default selection: All Features
+
+Filter values: Accent Translation, Noise Cancellation etc..
+
+Date Range
+
+Default: Last 30 days
+
+Custom selection: Start Date and End Date
+
+Maximum selectable range: 365 days
+
+Deployment
+
+One of Self Hosted or Cloud
+
+Only visible for selection if the account has opted for Self Hosted setup for Sanas SDK
+
+Time Bucketing
+
+Day
+
+Week
+
+Month
+
+Graph Visualization
+
+Chart Type: Line Chart
+
+API Requests Chart
+
+X-axis: Date
+
+Y-axis: Number of API Requests
+
+Minutes Processed Chart
+
+X-axis: Date
+
+Y-axis: Number of Minutes Processed
+
+Tooltip (on hover):
+
+Date
+
+Number of API Calls
+
+Empty States
+
+No Usage Data
+
+If no API calls exist within the selected date range:
+
+Message displayed:
+“No usage data for this period. Make your first API call to see usage here.”
+
+No API Keys
+
+If the developer has not created any API keys:
+
+Display CTA:
+“Create an API key to start tracking usage.”
+
+Export CSV
+
+Developers can export usage data for further analysis.
+
+Button: Export CSV (top-right of the dashboard)
+
+File Name Format:
+usage_report_{date}.csv
+
+Scope:
+Exports only the filtered dataset currently displayed
+
+Columns Included:
+
+Day
+
+Group
+
+Group ID
+
+API Request
+
+Endpoint
+
+API Name
+
+API Alias
+
+API Requests
+
+Total Aggregated Minutes
+
+Successful API Requests‌
+
+‌
+
+User Journey 6
+
+As a console user, I should be able to download SDK, and navigate to the SDK documentation from console
+
+Acceptance Criteria
+
+Users should be able to copy the quick setup to get started on the console
+
+There should be a quick copy option
+
+
+
+User Journey 7
+
+As a console user, I should be able to self host Sanas SDK on my premises
+
+
+
+
+
+
+
+
+
+
+
+Appendix
+
+Figma: https://www.figma.com/proto/PKpfFByBnJxuYoOggDRU0j/Portal-V3-B2B-Design-Workspace---Sep-25?page-id=0%3A1&node-id=20150-146365&p=f&viewport=83044%2C22027%2C0.89&t=XwNFBWH1czYQwQw3-1&scaling=contain&content-scaling=fixed&starting-point-node-id=20150%3A146365&show-proto-sidebar=1 
+
+‌

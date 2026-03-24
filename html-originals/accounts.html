@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts - Sanas Developer Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0a0e17;
+            color: #e4e7f0;
+            position: relative;
+        }
+
+        /* Futuristic grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #13182b;
+            border-right: 1px solid #1e2847;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #1e2847;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 217, 255, 0.03);
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #00d9ff;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'SF Mono', 'Monaco', monospace;
+        }
+
+        .logo::before {
+            content: '◆';
+            color: #00ff88;
+            font-size: 14px;
+            filter: drop-shadow(0 0 8px #00ff88);
+        }
+
+        .sidebar-content {
+            padding: 16px;
+            flex: 1;
+        }
+
+        .search-groups {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            background: #0a0e17;
+            color: #e4e7f0;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .search-groups::placeholder {
+            color: #5a6b8c;
+        }
+
+        .search-groups:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+        }
+
+        .nav-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            color: #8b95b0;
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 217, 255, 0.05);
+            border-color: rgba(0, 217, 255, 0.2);
+            color: #e4e7f0;
+        }
+
+        .nav-item.active {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.2);
+        }
+
+        .nav-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-icon {
+            font-size: 12px;
+        }
+
+        .chevron {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .nav-subtitle {
+            font-size: 11px;
+            color: #5a6b8c;
+            padding: 4px 12px 8px;
+            font-family: 'SF Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: #13182b;
+            border-bottom: 1px solid #1e2847;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 32px;
+            height: 100%;
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #8b95b0;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            padding: 0 4px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            color: #00d9ff;
+        }
+
+        .nav-tab.active {
+            color: #00d9ff;
+            border-bottom-color: #00d9ff;
+            text-shadow: 0 0 12px rgba(0, 217, 255, 0.5);
+        }
+
+        .tab-icon {
+            font-size: 16px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid #1e2847;
+            background: #0a0e17;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+            color: #8b95b0;
+        }
+
+        .icon-btn:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #8b95b0;
+            font-family: 'SF Mono', monospace;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #e4e7f0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 280px;
+            background: #0a0e17 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+            color: #e4e7f0;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+        }
+
+        .filter-btn {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #0a0e17 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
+            cursor: pointer;
+            appearance: none;
+            color: #e4e7f0;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.2);
+        }
+
+        .create-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .create-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Table */
+        .table-wrapper {
+            background: #13182b;
+            border-radius: 8px;
+            border: 1px solid #1e2847;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 217, 255, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 217, 255, 0.05);
+            border-bottom: 1px solid #00d9ff;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 2px solid #1e2847;
+            font-family: 'SF Mono', monospace;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #1e2847;
+            color: #e4e7f0;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 217, 255, 0.08);
+            border-left-color: #00d9ff;
+            box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        tbody tr:hover::after {
+            content: 'VIEW ACCOUNT →';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 10;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .account-name {
+            font-weight: 600;
+            color: #e4e7f0;
+        }
+
+        .account-id {
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+            color: #00ff88;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+        }
+
+        .account-id::after {
+            content: '📋';
+            margin-left: 6px;
+            opacity: 0;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .account-id:hover::after {
+            opacity: 0.5;
+        }
+
+        .admins {
+            display: flex;
+            align-items: center;
+        }
+
+        .admin-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #10b981;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            border: 2px solid white;
+            margin-left: -8px;
+        }
+
+        .admin-avatar:first-child {
+            margin-left: 0;
+        }
+
+        .admin-avatar.blue {
+            background: #3b82f6;
+        }
+
+        .parent-group {
+            color: #a78bfa;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .parent-group:hover {
+            color: #c4b5fd;
+            text-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
+        }
+
+        .billing-plans {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .plan-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: rgba(167, 139, 250, 0.1);
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            border-radius: 4px;
+            font-size: 11px;
+            color: #c4b5fd;
+            width: fit-content;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .plan-count {
+            margin-left: 6px;
+            color: #9ca3af;
+        }
+
+        .licenses {
+            font-weight: 600;
+            color: #00d9ff;
+        }
+
+        .date {
+            color: #8b95b0;
+            font-size: 13px;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .created-by {
+            color: #8b95b0;
+            font-size: 13px;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .actions {
+            position: relative;
+        }
+
+        .more-btn {
+            background: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 20px;
+            color: #5a6b8c;
+            border-radius: 4px;
+            line-height: 1;
+            position: relative;
+            z-index: 20;
+            transition: all 0.2s;
+        }
+
+        .more-btn:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 4px;
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 217, 255, 0.1);
+            min-width: 200px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dropdown.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #e4e7f0;
+            cursor: pointer;
+            border-bottom: 1px solid #1e2847;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 217, 255, 0.1);
+            color: #00d9ff;
+            padding-left: 20px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #13182b;
+            border: 1px solid #1e2847;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 217, 255, 0.2);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #1e2847;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 217, 255, 0.03);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #1e2847;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #0a0e17;
+            color: #e4e7f0;
+            font-family: 'SF Mono', monospace;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+            background: rgba(0, 217, 255, 0.05);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .autofill-btn {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .autofill-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .cancel-btn {
+            padding: 8px 20px;
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .cancel-btn:hover {
+            background: #f9fafb;
+        }
+
+        .submit-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+            color: #0a0e17;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.6), 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="logo">sanas</div>
+            </div>
+            <div class="sidebar-content">
+                <input type="text" class="search-groups" placeholder="Search Groups...">
+
+                <div class="nav-item active">
+                    <div class="nav-item-left">
+                        <span class="nav-icon">📊</span>
+                        <span>Sanas</span>
+                    </div>
+                    <span class="chevron">›</span>
+                </div>
+                <div class="nav-subtitle">Account ID: SANAS</div>
+
+                <div class="nav-item">
+                    <div class="nav-item-left">
+                        <span class="nav-icon">📍</span>
+                        <span>Direct CX</span>
+                    </div>
+                    <span class="chevron">›</span>
+                </div>
+
+                <div class="nav-item">
+                    <div class="nav-item-left">
+                        <span class="nav-icon">🔧</span>
+                        <span>Self Serve</span>
+                    </div>
+                    <span class="chevron">›</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <header class="header">
+                <nav class="nav-tabs">
+                    <a href="#" class="nav-tab">
+                        <span class="tab-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="accounts.html" class="nav-tab active">
+                        <span class="tab-icon">📄</span>
+                        <span>Accounts</span>
+                    </a>
+                    <a href="members.html" class="nav-tab">
+                        <span class="tab-icon">👥</span>
+                        <span>Sanas Members</span>
+                    </a>
+                </nav>
+                <div class="header-right">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">❓</button>
+                    <div class="user-info">Zupudi uday@sa...</div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <h1 class="page-title">Accounts</h1>
+
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <input type="text" class="search-input" placeholder="Search Account">
+                        <select class="filter-btn">
+                            <option>All Billing Plans</option>
+                            <option>Self Hosted SDK</option>
+                            <option>Sanas Cloud SDK</option>
+                        </select>
+                    </div>
+                    <button class="create-btn" onclick="openCreateModal()">Create Account</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Account Name</th>
+                                <th>Account ID</th>
+                                <th>Account Admins</th>
+                                <th>Parent Group</th>
+                                <th>Billing Plans Access</th>
+                                <th>Created On</th>
+                                <th>Created By</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountsTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Account Modal -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Account</h2>
+                <button class="close-btn" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createAccountForm">
+                    <div class="form-group">
+                        <label class="form-label">Account Name</label>
+                        <input type="text" class="form-input" id="accountName" placeholder="Enter account name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Account Admin</label>
+                        <input type="email" class="form-input" id="accountAdmin" placeholder="admin@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Parent Group</label>
+                        <select class="form-select" id="parentGroup" required>
+                            <option value="">Select parent group</option>
+                            <option value="Direct CX">Direct CX</option>
+                            <option value="Self Serve">Self Serve</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Billing Plans</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="billingPlan" value="Self Hosted SDK">
+                                Self Hosted SDK
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="billingPlan" value="Sanas Cloud SDK">
+                                Sanas Cloud SDK
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="autofill-btn" onclick="autofillForm()">⚡ Auto-fill</button>
+                <div class="modal-actions">
+                    <button class="cancel-btn" onclick="closeCreateModal()">Cancel</button>
+                    <button class="submit-btn" onclick="createAccount()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const accounts = [
+            { name: "Self Technologies Inc", id: "MMNYBVQH", admins: [{init: "JM", color: "green"}, {init: "AP", color: "blue"}], parentGroup: "Production > OnePlus", plans: ["Self Hosted SDK", "Sanas Cloud SDK"], licenses: 100, date: "13 Mar 2026", creator: "jerrand.paloma" },
+            { name: "Rohit-cx-test", id: "MMM3S6AD", admins: [{init: "RK", color: "green"}], parentGroup: "Production > Real Me", plans: ["Sanas Cloud SDK"], licenses: 20, date: "11 Mar 2026", creator: "Rohit.mosigan@san..." },
+            { name: "R1RCM", id: "R1RCM001", admins: [{init: "SY", color: "green"}], parentGroup: "Production", plans: ["Self Hosted SDK", "Sanas Cloud SDK"], licenses: 100, date: "15 Mar 2026", creator: "System" },
+            { name: "PJ Testing Account", id: "MMLUXIXU", admins: [{init: "PJ", color: "green"}], parentGroup: "Staging", plans: ["Self Hosted SDK"], licenses: 4, date: "11 Mar 2026", creator: "Pratyaksha Joshi" },
+            { name: "Pitch Perfect Solutions", id: "MMKZEXKO", admins: [{init: "JM", color: "green"}, {init: "AP", color: "blue"}], parentGroup: "Production > OnePlus", plans: ["Self Hosted SDK", "Sanas Cloud SDK"], licenses: 75, date: "11 Mar 2026", creator: "jerrand.paloma" },
+            { name: "Test Kushant", id: "MMKT9K36", admins: [{init: "KG", color: "green"}], parentGroup: "UAT", plans: ["Sanas Cloud SDK"], licenses: 202, date: "10 Mar 2026", creator: "Kushant Gang" },
+            { name: "Jerrand Test AT", id: "MMKH3VYN", admins: [{init: "JM", color: "green"}], parentGroup: "Staging", plans: ["Self Hosted SDK"], licenses: 100, date: "10 Mar 2026", creator: "jerrand.paloma" },
+            { name: "Jerrand Test AT", id: "MMKRW3H3", admins: [{init: "JM", color: "green"}], parentGroup: "Production > OnePay", plans: ["Self Hosted SDK", "Sanas Cloud SDK"], licenses: 100, date: "10 Mar 2026", creator: "jerrand.paloma" },
+            { name: "Production", id: "MMKRP8YY", admins: [{init: "ZU", color: "green"}], parentGroup: "Production", plans: ["Sanas Cloud SDK"], licenses: 4, date: "10 Mar 2026", creator: "Zupudi.uday@san..." },
+            { name: "Pratyaksha Test", id: "MMKDFRSM", admins: [{init: "PJ", color: "green"}, {init: "AP", color: "blue"}], parentGroup: "Production > Real Me", plans: ["Self Hosted SDK"], licenses: 4, date: "10 Mar 2026", creator: "pratyaksha.joshi..." }
+        ];
+
+        function renderTable() {
+            const tbody = document.getElementById('accountsTable');
+            tbody.innerHTML = accounts.map((acc, idx) => `
+                <tr onclick="goToAccount(${idx}, event)">
+                    <td><div class="account-name">${acc.name}</div></td>
+                    <td><div class="account-id">${acc.id}</div></td>
+                    <td>
+                        <div class="admins">
+                            ${acc.admins.map(a => `<div class="admin-avatar ${a.color}">${a.init}</div>`).join('')}
+                        </div>
+                    </td>
+                    <td><a class="parent-group">${acc.parentGroup}</a></td>
+                    <td>
+                        <div class="billing-plans">
+                            ${acc.plans.map(p => `<div class="plan-badge">${p}</div>`).join('')}
+                        </div>
+                    </td>
+                    <td><div class="date">${acc.date}</div></td>
+                    <td><div class="created-by">${acc.creator}</div></td>
+                    <td>
+                        <div class="actions">
+                            <button class="more-btn" onclick="toggleMenu(${idx}, event)">⋯</button>
+                            <div class="dropdown" id="menu-${idx}">
+                                <div class="dropdown-item" onclick="goToAccount(${idx}, event)">Go to Account</div>
+                                <div class="dropdown-item" onclick="editAccount(${idx}, event)">Edit Account Details</div>
+                                <div class="dropdown-item" onclick="editSubscription(${idx}, event)">Edit Subscriptions</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleMenu(idx, event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById(`menu-${idx}`);
+            document.querySelectorAll('.dropdown').forEach((m, i) => {
+                if (i !== idx) m.classList.remove('active');
+            });
+            menu.classList.toggle('active');
+        }
+
+        function goToAccount(idx, event) {
+            if (event) event.stopPropagation();
+            const account = accounts[idx];
+            // Navigate to account detail page with billing plans
+            const plans = encodeURIComponent(JSON.stringify(account.plans));
+            window.location.href = `account-detail.html?name=${encodeURIComponent(account.name)}&id=${encodeURIComponent(account.id)}&plans=${plans}`;
+        }
+
+        function editAccount(idx, event) {
+            if (event) {
+                event.stopPropagation();
+                document.getElementById(`menu-${idx}`).classList.remove('active');
+            }
+            alert(`Edit Account: ${accounts[idx].name}`);
+        }
+
+        function editSubscription(idx, event) {
+            if (event) {
+                event.stopPropagation();
+                document.getElementById(`menu-${idx}`).classList.remove('active');
+            }
+            alert(`Edit Subscriptions: ${accounts[idx].name}`);
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.actions')) {
+                document.querySelectorAll('.dropdown').forEach(m => m.classList.remove('active'));
+            }
+        });
+
+        // Modal functions
+        function openCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+            document.getElementById('createAccountForm').reset();
+        }
+
+        function autofillForm() {
+            document.getElementById('accountName').value = 'Test Account ' + Math.floor(Math.random() * 1000);
+            document.getElementById('accountAdmin').value = 'test.admin@sanas.ai';
+            document.getElementById('parentGroup').value = 'Direct CX';
+
+            const checkboxes = document.querySelectorAll('input[name="billingPlan"]');
+            checkboxes.forEach(cb => cb.checked = true);
+        }
+
+        function createAccount() {
+            const form = document.getElementById('createAccountForm');
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const accountName = document.getElementById('accountName').value;
+            const accountAdmin = document.getElementById('accountAdmin').value;
+            const parentGroup = document.getElementById('parentGroup').value;
+            const billingPlans = Array.from(document.querySelectorAll('input[name="billingPlan"]:checked'))
+                .map(cb => cb.value);
+
+            if (billingPlans.length === 0) {
+                alert('Please select at least one billing plan');
+                return;
+            }
+
+            // Generate random account ID
+            const accountId = 'MM' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+            // Get admin initials
+            const initials = accountAdmin.split('@')[0].substring(0, 2).toUpperCase();
+
+            // Create new account object
+            const newAccount = {
+                name: accountName,
+                id: accountId,
+                admins: [{init: initials, color: "green"}],
+                parentGroup: parentGroup,
+                plans: billingPlans,
+                date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                creator: accountAdmin
+            };
+
+            // Add to accounts array
+            accounts.unshift(newAccount);
+
+            // Re-render table
+            renderTable();
+
+            // Close modal
+            closeCreateModal();
+
+            // Show success message
+            alert(`Account "${accountName}" created successfully!`);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('createModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCreateModal();
+            }
+        });
+
+        renderTable();
+    </script>
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanas Members - Sanas Developer Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #fafafa;
+            color: #1f2937;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #6b7280;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .logo::before {
+            content: '◆';
+            color: #000;
+            font-size: 12px;
+        }
+
+        .sidebar-content {
+            padding: 16px;
+            flex: 1;
+        }
+
+        .search-groups {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            background: white;
+        }
+
+        .search-groups::placeholder {
+            color: #9ca3af;
+        }
+
+        .nav-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+        }
+
+        .nav-item:hover {
+            background: #f9fafb;
+        }
+
+        .nav-item.active {
+            background: #f3f4f6;
+        }
+
+        .nav-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-icon {
+            font-size: 12px;
+        }
+
+        .chevron {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .nav-subtitle {
+            font-size: 11px;
+            color: #9ca3af;
+            padding: 4px 12px 8px;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 32px;
+            height: 100%;
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            padding: 0 4px;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover {
+            color: #111827;
+        }
+
+        .nav-tab.active {
+            color: #111827;
+            border-bottom-color: #111827;
+        }
+
+        .tab-icon {
+            font-size: 16px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background 0.15s;
+        }
+
+        .icon-btn:hover {
+            background: #f9fafb;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Sub Tabs */
+        .sub-tabs {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sub-tab {
+            padding: 10px 4px;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+        }
+
+        .sub-tab:hover {
+            color: #111827;
+        }
+
+        .sub-tab.active {
+            color: #111827;
+            border-bottom-color: #111827;
+            font-weight: 500;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 280px;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .invite-btn {
+            padding: 8px 20px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .invite-btn:hover {
+            background: #059669;
+        }
+
+        /* Table */
+        .table-wrapper {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #fafafa;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th.sortable {
+            cursor: pointer;
+        }
+
+        th.sortable::after {
+            content: '↕';
+            margin-left: 6px;
+            opacity: 0.3;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .user-name {
+            color: #111827;
+        }
+
+        .user-email {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.activated {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.deactivated {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status-badge.invitation-sent {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .date {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .created-by {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .manage-access {
+            color: #6366f1;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .manage-access:hover {
+            text-decoration: underline;
+        }
+
+        .manage-access.empty {
+            color: #d1d5db;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .rows-per-page {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .rows-select {
+            padding: 4px 24px 4px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .page-info {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .page-nav {
+            display: flex;
+            gap: 4px;
+        }
+
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #6b7280;
+            transition: all 0.15s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f9fafb;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="logo">sanas</div>
+            </div>
+            <div class="sidebar-content">
+                <input type="text" class="search-groups" placeholder="Search Groups...">
+
+                <div class="nav-item active">
+                    <div class="nav-item-left">
+                        <span class="nav-icon">📊</span>
+                        <span>Sanas</span>
+                    </div>
+                    <span class="chevron">›</span>
+                </div>
+                <div class="nav-subtitle">Account ID: SANAS</div>
+
+                <div class="nav-item">
+                    <div class="nav-item-left">
+                        <span class="nav-icon">📍</span>
+                        <span>Direct CX</span>
+                    </div>
+                    <span class="chevron">›</span>
+                </div>
+
+                <div class="nav-item">
+                    <div class="nav-item-left">
+                        <span class="nav-icon">🔧</span>
+                        <span>Self Serve</span>
+                    </div>
+                    <span class="chevron">›</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <header class="header">
+                <nav class="nav-tabs">
+                    <a href="#" class="nav-tab">
+                        <span class="tab-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="accounts.html" class="nav-tab">
+                        <span class="tab-icon">📄</span>
+                        <span>Accounts</span>
+                    </a>
+                    <a href="members.html" class="nav-tab active">
+                        <span class="tab-icon">👥</span>
+                        <span>Sanas Members</span>
+                    </a>
+                </nav>
+                <div class="header-right">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">❓</button>
+                    <div class="user-info">Zupudi uday@sa...</div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <h1 class="page-title">Sanas Members</h1>
+
+                <div class="sub-tabs">
+                    <div class="sub-tab active">Portal Users</div>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <input type="text" class="search-input" placeholder="Search Portal Users">
+                    </div>
+                    <div class="toolbar-right">
+                        <select class="filter-btn">
+                            <option>All Roles</option>
+                            <option>Sanas Admin</option>
+                            <option>Sanas User</option>
+                        </select>
+                        <select class="filter-btn">
+                            <option>All Status</option>
+                            <option>Activated</option>
+                            <option>Deactivated</option>
+                            <option>Invitation Sent</option>
+                        </select>
+                        <button class="invite-btn">
+                            <span>Invite & Manage</span>
+                            <span>✓</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email Id</th>
+                                <th>Status ⓘ</th>
+                                <th class="sortable">Created On</th>
+                                <th>Created By</th>
+                                <th>Manage Access</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTable">
+                        </tbody>
+                    </table>
+
+                    <div class="pagination">
+                        <div class="rows-per-page">
+                            <span>Rows per page:</span>
+                            <select class="rows-select">
+                                <option>10</option>
+                                <option>25</option>
+                                <option>50</option>
+                                <option>100</option>
+                            </select>
+                        </div>
+                        <div class="page-info">1-10 of 84</div>
+                        <div class="page-nav">
+                            <button class="page-btn" disabled>‹</button>
+                            <button class="page-btn">›</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const members = [
+            { name: "jeniffer.solano@sanas.ai", email: "jeniffer.solano@sanas.ai", status: "activated", date: "10 Mar 2026", creator: "Carlos Mejia", access: "Sanas Admin" },
+            { name: "Mallikarjuna.c@sanas.ai", email: "mallikarjuna.c@sanas.ai", status: "activated", date: "10 Mar 2026", creator: "Kushant Gang", access: "Sanas Admin" },
+            { name: "pratyaksha.joshi+01@sanas.ai", email: "pratyaksha.joshi+01@sanas.ai", status: "deactivated", date: "10 Mar 2026", creator: "Kushant Gang", access: "" },
+            { name: "arvin@sanas.ai", email: "arvin@sanas.ai", status: "activated", date: "9 Mar 2026", creator: "zupudi.uday@sanas.ai", access: "Sanas Admin" },
+            { name: "harshith.kumar1@sanas.ai", email: "harshith.kumar1@sanas.ai", status: "activated", date: "9 Mar 2026", creator: "Harshith Gowda", access: "Sanas User" },
+            { name: "ronak.giri@sanas.ai", email: "ronak.giri@sanas.ai", status: "activated", date: "24 Feb 2026", creator: "zupudi.uday@sanas.ai", access: "Sanas Admin" },
+            { name: "john.hong@sanas.ai", email: "john.hong@sanas.ai", status: "activated", date: "24 Feb 2026", creator: "peter.venugoyen.01@sanas.ai", access: "Sanas Admin" },
+            { name: "katherine.butalapei@sanas.ai", email: "katherine.butalapei@sanas.ai", status: "invitation-sent", date: "20 Feb 2026", creator: "Harshith Gowda", access: "Sanas Admin" },
+            { name: "inderpreet.singh@sanas.ai", email: "inderpreet.singh@sanas.ai", status: "activated", date: "20 Feb 2026", creator: "Harshith Gowda", access: "Sanas Admin" },
+            { name: "vikash.kumar@sanas.ai", email: "vikash.kumar@sanas.ai", status: "activated", date: "20 Feb 2026", creator: "Harshith Gowda", access: "Sanas Admin" }
+        ];
+
+        function renderTable() {
+            const tbody = document.getElementById('membersTable');
+            tbody.innerHTML = members.map(member => `
+                <tr>
+                    <td><div class="user-name">${member.name}</div></td>
+                    <td><div class="user-email">${member.email}</div></td>
+                    <td>
+                        <span class="status-badge ${member.status}">
+                            ${member.status === 'activated' ? 'Activated' :
+                              member.status === 'deactivated' ? 'Deactivated' :
+                              'Invitation Sent'}
+                        </span>
+                    </td>
+                    <td><div class="date">${member.date}</div></td>
+                    <td><div class="created-by">${member.creator}</div></td>
+                    <td>
+                        ${member.access ?
+                            `<a class="manage-access">${member.access}</a>` :
+                            `<span class="manage-access empty">—</span>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>
