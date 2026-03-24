@@ -2,14 +2,9 @@
   <aside class="w-[220px] shrink-0 bg-black2 border-r border-border1 flex flex-col fixed top-0 left-0 bottom-0 z-[100] overflow-hidden">
     <!-- Logo -->
     <div class="flex items-center gap-2.5 px-4 py-5 border-b border-border1">
-      <div class="w-[26px] h-[26px] bg-grn rounded-[6px] flex items-center justify-center shrink-0">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M8 12c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4"/>
-        </svg>
+      <div class="h-[100px] flex items-center justify-center shrink-0">
+        <img src="@/assets/logo.png" alt="Sanas" />
       </div>
-      <span class="font-display font-bold text-sm tracking-[-0.02em] text-white">sanas</span>
-      <span class="ml-auto text-[9px] font-mono bg-grn/10 text-grn border border-grn/[0.18] rounded px-[5px] py-[1px]">DEV</span>
     </div>
 
     <!-- Nav -->
