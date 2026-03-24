@@ -2,56 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Color tokens: dark (default) ───────────────────────────────── */
-:root {
-  --black1:  #080808;
-  --black2:  #0f0f0f;
-  --card:    #181818;
-  --card2:   #1e1e1e;
-  --card3:   #242424;
-  --border1: #272727;
-  --border2: #333333;
-  --border3: #404040;
-  --g1:      #f4f4f4;
-  --g2:      #d4d4d4;
-  --g3:      #a3a3a3;
-  --g4:      #737373;
-  --g5:      #525252;
-  --g6:      #3a3a3a;
-  --sidebar: #000000;
-}
-
-/* ── Color tokens: light override ──────────────────────────────── */
-html.light {
-  --black1:  #f4f5f7;
-  --black2:  #eaecf0;
-  --card:    #ffffff;
-  --card2:   #f4f5f7;
-  --card3:   #eaecf0;
-  --border1: #e2e4ea;
-  --border2: #cdd0d9;
-  --border3: #b8bcc8;
-  --g1:      #111111;
-  --g2:      #333333;
-  --g3:      #555555;
-  --g4:      #6b6b6b;
-  --g5:      #909090;
-  --g6:      #b0b4be;
-  --sidebar: #ffffff;
-}
-
-/* ── Base ───────────────────────────────────────────────────────── */
 html { -webkit-font-smoothing: antialiased; font-size: 14px; }
-body { background: var(--black1); color: var(--g1); font-family: 'DM Sans', sans-serif; line-height: 1.6; }
+body { background: #080808; color: #fff; font-family: 'DM Sans', sans-serif; line-height: 1.6; }
 
-/* ── Scrollbar ──────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--black1); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+::-webkit-scrollbar-track { background: #080808; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* ── Animations ─────────────────────────────────────────────────── */
-@keyframes blink  { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
-.fade-in       { animation: fadeIn .18s ease; }
+.fade-in { animation: fadeIn .18s ease; }
 .env-dot-blink { animation: blink 2s infinite; }
