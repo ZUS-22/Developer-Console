@@ -3,7 +3,7 @@
     <!-- Logo -->
     <div class="flex items-center gap-2.5 px-4 py-5 border-b border-border1">
       <div class="h-[100px] flex items-center justify-center shrink-0">
-        <img src="@/assets/logo.png" alt="Sanas" />
+        <img src="../assets/logo.png" alt="Sanas" />
       </div>
     </div>
 
