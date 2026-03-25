@@ -1,24 +1,28 @@
 <template>
-  <aside class="w-[220px] shrink-0 bg-[#000000] border-r border-border1 flex flex-col fixed top-0 left-0 bottom-0 z-[100] overflow-hidden">
+  <aside class="w-[220px] shrink-0 bg-black1 border-r border-border1 flex flex-col fixed top-0 left-0 bottom-0 z-[100] overflow-hidden">
     <!-- Logo -->
     <div class="flex items-center gap-2.5 px-4 py-5">
       <img src="../assets/logo.png" alt="Sanas" class="h-8 w-auto" />
     </div>
 
     <!-- Nav -->
-    <nav class="flex-1 px-2.5 py-3 overflow-y-auto">
-      <div v-for="section in sections" :key="section.label" class="mb-[22px]">
+    <nav class="flex-1 px-2.5 py-3 overflow-y-auto" aria-label="Main navigation">
+      <div v-for="section in sections" :key="section.label" class="mb-5">
         <div class="text-[9.5px] font-mono text-g5 tracking-[0.08em] uppercase px-2 mb-[5px]">{{ section.label }}</div>
         <div
           v-for="item in section.items"
           :key="item.id"
           :class="[
-            'flex items-center gap-[9px] px-[9px] py-[7px] rounded-rxs cursor-pointer text-[12.5px] transition-all duration-[130ms] border select-none',
+            'flex items-center gap-[9px] px-[9px] py-[7px] rounded-rxs cursor-pointer text-[12.5px] transition-colors duration-[130ms] border select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-grn/40',
             activeId === item.id
-              ? 'text-white bg-grn/10 border-grn/[0.13]'
+              ? 'text-white bg-grn/10 border-grn/15'
               : 'text-g3 border-transparent hover:text-white hover:bg-card'
           ]"
+          :aria-current="activeId === item.id ? 'page' : undefined"
+          tabindex="0"
+          role="menuitem"
           @click="$emit('select', item.id)"
+          @keydown.enter.space.prevent="$emit('select', item.id)"
         >
           <svg
             :class="['w-[14px] h-[14px] shrink-0', activeId === item.id ? 'text-grn opacity-100' : 'opacity-55']"

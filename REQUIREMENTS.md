@@ -2,6 +2,38 @@
 
 ---
 
+## Requirement 8: Analytics — Model Usage & Daily Activity
+
+### User Journey
+1. Admin navigates to the Analytics page
+2. Admin clicks the **Model Usage** tab to see which models are being used and how long calls last
+3. Admin reviews the horizontal bar charts and the model breakdown table
+4. Admin clicks the **Daily Activity** tab to see stream volume by day
+
+### User Story
+**As a** Sanas admin
+**I want to** see model-level usage and daily stream volume on the Analytics page
+**So that** I can understand which models are most used, how long they run, and when usage spikes occur
+
+### Acceptance Criteria
+- [x] Analytics page has four tabs: Overview, Model Usage, Daily Activity, Error Analysis
+- [x] Model Usage tab shows a horizontal bar chart of total streams per model
+- [x] Model Usage tab shows a horizontal bar chart of average duration per model (in seconds)
+- [x] Each model has a distinct color in the charts (purple, blue, light purple, orange, gray)
+- [x] Model breakdown table shows: model name, usage count, success %, processing %, avg duration
+- [x] Success and processing percentages shown as colored badges (green for 100%, orange for 0%)
+- [x] Daily Activity tab shows a vertical bar chart of total streams per day
+- [x] Daily Activity chart labels dates in DD/MM format
+- [x] Charts only render when their tab is active
+- [x] Error Analysis tab shows an empty state message
+
+### Open Questions / Missing Details
+- Should the model data and daily stream data eventually connect to a live API?
+- Should the date range filter (on the Overview tab) also apply to Model Usage and Daily Activity tabs?
+- Should clicking a bar in either chart drill down into more detail?
+
+---
+
 ## Requirement 1: Login Page
 
 ### User Journey

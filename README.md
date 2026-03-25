@@ -1,7 +1,41 @@
 # Sanas Developer Console — Build Log
 
 ## Current State
-The prototype is now a fully functional Vue.js single-page application. All 7 pages are live and navigable without page reloads. The app uses Tailwind CSS for styling and Vue Router for navigation. All original visual designs from the HTML prototype are preserved. The original HTML files are archived in the `html-originals/` folder.
+The prototype is a fully functional Vue.js single-page application. The Analytics page now has four tabs — Overview, Model Usage, Daily Activity, and Error Analysis — with horizontal bar charts, a model breakdown table, and a daily stream volume chart.
+
+---
+
+## Iteration 8 — Analytics Page: Model Usage & Daily Activity
+
+### What Was Built
+Added two new analytics views to the Analytics page, accessible via tabs at the top:
+
+**Model Usage tab**
+- Two horizontal bar charts side by side:
+  - **Usage by model** — shows total streams per model (AGENTIC_VI_G_NC leads with ~24k)
+  - **Avg duration by model** — shows average call duration in seconds per model
+- Each model has its own color (purple, blue, light purple, orange, gray)
+- **Model breakdown table** below the charts showing: model name, usage count, success rate badge, processing rate badge, and average duration
+
+**Daily Activity tab**
+- **Daily stream volume** vertical bar chart showing total streams per day
+- Dates shown: 16/03 through 25/03
+- Data reflects a large spike on 24/03 (~18,200 streams)
+
+The existing Overview tab (line charts with filters) and the new Error Analysis tab (empty state placeholder) remain in place.
+
+### What Changed from Previous Version
+- Added top-level tab navigation: Overview, Model Usage, Daily Activity, Error Analysis
+- Model Usage and Daily Activity tabs show new chart types (horizontal bars, vertical bar)
+- Charts initialize only when their tab is first opened
+
+### Current State
+- All four analytics tabs are live and navigable
+- Model data is static/representative (matches the provided screenshots)
+- Error Analysis tab shows an empty state message
+
+### What Is Pending
+- No pending items for this iteration
 
 ---
 
